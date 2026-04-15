@@ -8,6 +8,7 @@ import { useI18n } from '@/i18n'
 import { useCarsStore } from '@/store/cars'
 import { useRentalsStore } from '@/store/rentals'
 import { useUiStore } from '@/store/ui'
+import { humanizeEnum } from '@/utils/format'
 
 const router = useRouter()
 const rentalsStore = useRentalsStore()
@@ -20,6 +21,7 @@ const status = ref('ALL')
 const copy = computed(() =>
   locale.value === 'ru'
     ? {
+        kicker: 'Аренды',
         title: 'Обработка аренд',
         subtitle: 'Менеджер переводит аренду в статусы ISSUED и COMPLETED без нарушения бизнес-правил.',
         placeholder: 'Поиск по заказу, клиенту или автомобилю',
@@ -32,6 +34,7 @@ const copy = computed(() =>
         completeFailed: 'Не удалось завершить аренду',
       }
     : {
+        kicker: 'Rentals',
         title: 'Rental processing',
         subtitle: 'The manager moves rentals to ISSUED and COMPLETED without violating business rules.',
         placeholder: 'Search by order, client, or vehicle',
@@ -95,7 +98,7 @@ async function completeRental(rentalId: string) {
   <section>
     <div class="page-header">
       <div>
-        <p class="page-kicker">Rentals</p>
+        <p class="page-kicker">{{ copy.kicker }}</p>
         <h1 class="page-title">{{ copy.title }}</h1>
         <p class="page-subtitle">{{ copy.subtitle }}</p>
       </div>
@@ -106,11 +109,11 @@ async function completeRental(rentalId: string) {
         <input v-model="query" class="input-base" :placeholder="copy.placeholder" />
         <select v-model="status" class="input-base">
           <option value="ALL">{{ copy.all }}</option>
-          <option value="CREATED">CREATED</option>
-          <option value="CONFIRMED">CONFIRMED</option>
-          <option value="ISSUED">ISSUED</option>
-          <option value="COMPLETED">COMPLETED</option>
-          <option value="CANCELLED">CANCELLED</option>
+          <option value="CREATED">{{ humanizeEnum('CREATED') }}</option>
+          <option value="CONFIRMED">{{ humanizeEnum('CONFIRMED') }}</option>
+          <option value="ISSUED">{{ humanizeEnum('ISSUED') }}</option>
+          <option value="COMPLETED">{{ humanizeEnum('COMPLETED') }}</option>
+          <option value="CANCELLED">{{ humanizeEnum('CANCELLED') }}</option>
         </select>
       </div>
     </div>

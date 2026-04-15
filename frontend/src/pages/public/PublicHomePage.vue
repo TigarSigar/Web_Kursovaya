@@ -3,6 +3,7 @@ import { computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import {
   ArrowRight,
+  Car,
   CalendarCheck2,
   CreditCard,
   Headphones,
@@ -15,14 +16,19 @@ import SearchForm from '@/components/cars/SearchForm.vue'
 import CarCard from '@/components/cars/CarCard.vue'
 import { useI18n } from '@/i18n'
 import { useCarsStore } from '@/store/cars'
+import { useUiStore } from '@/store/ui'
 import type { SearchCarsParams } from '@/types/entities'
 
 const router = useRouter()
 const carsStore = useCarsStore()
+const uiStore = useUiStore()
 const { locale } = useI18n()
 const copy = computed(() =>
   locale.value === 'ru'
     ? {
+        titleLine1: 'Путешествуйте',
+        titleLine2: 'с уверенностью',
+        titleLine3: 'и комфортом',
         subtitle: 'Выбирайте автомобили из широкого каталога, бронируйте онлайн и получайте надёжный сервис без лишних шагов.',
         explore: 'Смотреть автомобили',
         about: 'О сервисе',
@@ -32,10 +38,29 @@ const copy = computed(() =>
         all: 'Все автомобили',
         how: 'Как это работает',
         howText: 'Аренда автомобиля в несколько простых шагов.',
+        howLocationTitle: 'Выберите локацию',
+        howLocationText: 'Укажите удобную точку выдачи и возврата автомобиля.',
+        howDatesTitle: 'Выберите даты',
+        howDatesText: 'Задайте период аренды и сразу проверьте доступность.',
+        howCarTitle: 'Выберите автомобиль',
+        howCarText: 'Сравните доступные машины и откройте подходящий вариант.',
+        howDriveTitle: 'Заберите и поезжайте',
+        howDriveText: 'Подтвердите заказ, заберите авто и начните поездку.',
         why: 'Почему CarGO',
         whyText: 'Современный сервис аренды с прозрачными условиями и быстрым бронированием',
+        insuranceTitle: 'Полное покрытие',
+        insuranceText: 'Автомобили подготовлены к выдаче и сопровождаются прозрачными условиями защиты.',
+        supportTitle: 'Поддержка 24/7',
+        supportText: 'Команда сервиса помогает с бронированием, выдачей и возвратом в любое время.',
+        priceTitle: 'Честная цена',
+        priceText: 'Стоимость без скрытых доплат: базовая цена, тариф и понятные ограничения.',
+        bookingTitle: 'Быстрое бронирование',
+        bookingText: 'Онлайн-оформление занимает несколько минут и сразу показывает результат проверки.',
       }
     : {
+        titleLine1: 'Drive with',
+        titleLine2: 'Confidence',
+        titleLine3: 'and Comfort',
         subtitle: 'Choose from a wide range of cars, book easily online, and enjoy a smooth, reliable driving experience wherever you go.',
         explore: 'Explore Cars',
         about: 'About us',
@@ -45,8 +70,24 @@ const copy = computed(() =>
         all: 'View All Cars',
         how: 'How It Works',
         howText: 'Renting a car has never been easier. Just follow these simple steps.',
+        howLocationTitle: 'Choose Location',
+        howLocationText: 'Select the pickup and return point that fits your trip.',
+        howDatesTitle: 'Pick Dates',
+        howDatesText: 'Set the rental period and check live availability instantly.',
+        howCarTitle: 'Select Car',
+        howCarText: 'Compare available vehicles and open the option that suits you best.',
+        howDriveTitle: 'Drive Away',
+        howDriveText: 'Confirm the booking, pick up the vehicle, and start your trip.',
         why: 'Why Choose CarGO',
         whyText: 'We provide the best car rental experience with premium service',
+        insuranceTitle: 'Full Coverage',
+        insuranceText: 'Vehicles are prepared for handover and backed by transparent protection terms.',
+        supportTitle: '24/7 Support',
+        supportText: 'The service team helps with booking, pickup, and return whenever needed.',
+        priceTitle: 'Fair Pricing',
+        priceText: 'No hidden charges: base fee, tariff rate, and restrictions are clear upfront.',
+        bookingTitle: 'Easy Booking',
+        bookingText: 'The online flow takes only minutes and immediately shows the validation result.',
       },
 )
 
@@ -79,11 +120,11 @@ function handleSearch(params: SearchCarsParams) {
     <div class="relative mx-auto max-w-7xl px-4 pb-20 pt-20 lg:px-8 lg:pb-28 lg:pt-28">
       <div class="mx-auto max-w-5xl text-center">
         <h1 class="text-balance text-5xl font-semibold leading-[1.06] text-white md:text-7xl">
-          Drive with <span class="text-primary">Confidence</span>
+          {{ copy.titleLine1 }} <span class="text-primary">{{ copy.titleLine2 }}</span>
           <br />
-          Travel with <span class="text-primary">Comfort.</span>
+          {{ locale === 'ru' ? 'Выбирайте' : 'Travel with' }} <span class="text-primary">{{ copy.titleLine3 }}.</span>
           <br />
-          Arrive in Style
+          {{ locale === 'ru' ? 'Приезжайте стильно' : 'Arrive in Style' }}
         </h1>
         <p class="mx-auto mt-10 max-w-4xl text-xl leading-9 text-white/50">
           {{ copy.subtitle }}
@@ -91,7 +132,7 @@ function handleSearch(params: SearchCarsParams) {
       </div>
 
       <div class="mx-auto mt-16 max-w-6xl">
-        <SearchForm :locations="locations" theme="dark" @submit="handleSearch" />
+        <SearchForm :locations="locations" :theme="uiStore.theme" @submit="handleSearch" />
       </div>
 
       <div class="mt-10 flex flex-wrap items-center justify-center gap-4">
@@ -122,7 +163,7 @@ function handleSearch(params: SearchCarsParams) {
           v-for="car in featuredCars"
           :key="car.id"
           :car="car"
-          theme="dark"
+          :theme="uiStore.theme"
           :action-label="copy.view"
           :action-to="`/cars?carClass=${car.carClass}`"
         />
@@ -149,29 +190,29 @@ function handleSearch(params: SearchCarsParams) {
           <div class="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-3xl border border-primary/20 bg-primary/10">
             <MapPin class="h-8 w-8 text-primary" />
           </div>
-          <h3 class="text-xl font-semibold text-white">Choose Location</h3>
-          <p class="mt-3 text-sm leading-6 text-white/45">Select your preferred pickup and return location</p>
+          <h3 class="text-xl font-semibold text-white">{{ copy.howLocationTitle }}</h3>
+          <p class="mt-3 text-sm leading-6 text-white/45">{{ copy.howLocationText }}</p>
         </div>
         <div class="text-center">
           <div class="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-3xl border border-primary/20 bg-primary/10">
             <CalendarCheck2 class="h-8 w-8 text-primary" />
           </div>
-          <h3 class="text-xl font-semibold text-white">Pick Dates</h3>
-          <p class="mt-3 text-sm leading-6 text-white/45">Choose your rental dates that work for you</p>
+          <h3 class="text-xl font-semibold text-white">{{ copy.howDatesTitle }}</h3>
+          <p class="mt-3 text-sm leading-6 text-white/45">{{ copy.howDatesText }}</p>
         </div>
         <div class="text-center">
           <div class="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-3xl border border-primary/20 bg-primary/10">
             <Car class="h-8 w-8 text-primary" />
           </div>
-          <h3 class="text-xl font-semibold text-white">Select Car</h3>
-          <p class="mt-3 text-sm leading-6 text-white/45">Browse and select from our premium fleet</p>
+          <h3 class="text-xl font-semibold text-white">{{ copy.howCarTitle }}</h3>
+          <p class="mt-3 text-sm leading-6 text-white/45">{{ copy.howCarText }}</p>
         </div>
         <div class="text-center">
           <div class="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-3xl border border-primary/20 bg-primary/10">
             <KeyRound class="h-8 w-8 text-primary" />
           </div>
-          <h3 class="text-xl font-semibold text-white">Drive Away</h3>
-          <p class="mt-3 text-sm leading-6 text-white/45">Pick up your car and enjoy your journey</p>
+          <h3 class="text-xl font-semibold text-white">{{ copy.howDriveTitle }}</h3>
+          <p class="mt-3 text-sm leading-6 text-white/45">{{ copy.howDriveText }}</p>
         </div>
       </div>
     </div>
@@ -188,23 +229,23 @@ function handleSearch(params: SearchCarsParams) {
       <div class="mt-12 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
         <div class="rounded-[28px] border border-white/8 bg-white/[0.03] p-6 backdrop-blur">
           <Shield class="h-6 w-6 text-primary" />
-          <h3 class="mt-5 text-xl font-semibold text-white">Full Insurance</h3>
-          <p class="mt-3 text-sm leading-6 text-white/45">All our vehicles come with comprehensive insurance coverage</p>
+          <h3 class="mt-5 text-xl font-semibold text-white">{{ copy.insuranceTitle }}</h3>
+          <p class="mt-3 text-sm leading-6 text-white/45">{{ copy.insuranceText }}</p>
         </div>
         <div class="rounded-[28px] border border-white/8 bg-white/[0.03] p-6 backdrop-blur">
           <Clock3 class="h-6 w-6 text-primary" />
-          <h3 class="mt-5 text-xl font-semibold text-white">24/7 Support</h3>
-          <p class="mt-3 text-sm leading-6 text-white/45">Round-the-clock customer support for your peace of mind</p>
+          <h3 class="mt-5 text-xl font-semibold text-white">{{ copy.supportTitle }}</h3>
+          <p class="mt-3 text-sm leading-6 text-white/45">{{ copy.supportText }}</p>
         </div>
         <div class="rounded-[28px] border border-white/8 bg-white/[0.03] p-6 backdrop-blur">
           <CreditCard class="h-6 w-6 text-primary" />
-          <h3 class="mt-5 text-xl font-semibold text-white">Best Prices</h3>
-          <p class="mt-3 text-sm leading-6 text-white/45">Competitive rates with no hidden fees or charges</p>
+          <h3 class="mt-5 text-xl font-semibold text-white">{{ copy.priceTitle }}</h3>
+          <p class="mt-3 text-sm leading-6 text-white/45">{{ copy.priceText }}</p>
         </div>
         <div class="rounded-[28px] border border-white/8 bg-white/[0.03] p-6 backdrop-blur">
           <Headphones class="h-6 w-6 text-primary" />
-          <h3 class="mt-5 text-xl font-semibold text-white">Easy Booking</h3>
-          <p class="mt-3 text-sm leading-6 text-white/45">Simple online booking process with instant confirmation</p>
+          <h3 class="mt-5 text-xl font-semibold text-white">{{ copy.bookingTitle }}</h3>
+          <p class="mt-3 text-sm leading-6 text-white/45">{{ copy.bookingText }}</p>
         </div>
       </div>
     </div>

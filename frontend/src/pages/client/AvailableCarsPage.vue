@@ -9,10 +9,12 @@ import ErrorState from '@/components/common/ErrorState.vue'
 import { useI18n } from '@/i18n'
 import { useAuthStore } from '@/store/auth'
 import { useCarsStore } from '@/store/cars'
+import { useUiStore } from '@/store/ui'
 import type { SearchCarsParams, CarClass } from '@/types/entities'
 
 const carsStore = useCarsStore()
 const authStore = useAuthStore()
+const uiStore = useUiStore()
 const route = useRoute()
 const router = useRouter()
 const { locale } = useI18n()
@@ -20,6 +22,7 @@ const { locale } = useI18n()
 const copy = computed(() =>
   locale.value === 'ru'
     ? {
+        kicker: 'Результаты поиска',
         title: 'Доступные автомобили',
         subtitle: 'Результаты учитывают пересечения аренд и окна обслуживания ещё до оформления заказа.',
         selectPeriod: 'Сначала выберите период аренды',
@@ -33,6 +36,7 @@ const copy = computed(() =>
         signIn: 'Войти для бронирования',
       }
     : {
+        kicker: 'Search results',
         title: 'Available Cars',
         subtitle: 'Results are checked against rental overlaps and maintenance windows before booking is allowed.',
         selectPeriod: 'Select your rental period first',
@@ -101,16 +105,16 @@ watch(() => route.fullPath, runSearch)
 </script>
 
 <template>
-  <section>
+  <section class="mx-auto max-w-7xl px-4 py-8 lg:px-8 lg:py-10">
     <div class="page-header">
       <div>
-        <p class="page-kicker">Search results</p>
+        <p class="page-kicker">{{ copy.kicker }}</p>
         <h1 class="page-title">{{ copy.title }}</h1>
         <p class="page-subtitle">{{ copy.subtitle }}</p>
       </div>
     </div>
 
-    <SearchForm :initial="searchParams" :locations="locations" compact theme="dark" @submit="submitSearch" />
+    <SearchForm :initial="searchParams" :locations="locations" compact :theme="uiStore.theme" @submit="submitSearch" />
 
     <div class="mt-8">
       <ErrorState v-if="carsStore.error" :message="carsStore.error" @retry="runSearch" />
@@ -136,7 +140,7 @@ watch(() => route.fullPath, runSearch)
               :key="item.car.id"
               :car="item.car"
               :result="item"
-              theme="dark"
+              :theme="uiStore.theme"
               :action-label="authStore.isAuthenticated ? copy.book : copy.signIn"
               :action-to="buildRentalLink(item.car.id)"
             />
@@ -156,7 +160,7 @@ watch(() => route.fullPath, runSearch)
             <p class="text-sm text-white/45">{{ unavailable.length }} {{ copy.vehicles }}</p>
           </div>
           <div v-if="unavailable.length" class="grid gap-6 xl:grid-cols-2">
-            <CarCard v-for="item in unavailable" :key="item.car.id" :car="item.car" :result="item" theme="dark" />
+            <CarCard v-for="item in unavailable" :key="item.car.id" :car="item.car" :result="item" :theme="uiStore.theme" />
           </div>
         </section>
       </template>

@@ -25,12 +25,12 @@ const { t } = useI18n()
       <thead class="border-b border-white/8 text-xs uppercase tracking-[0.18em] text-white/35">
         <tr>
           <th class="py-4 pr-4">{{ t('common.order') }}</th>
-          <th class="py-4 pr-4">Client</th>
-          <th class="py-4 pr-4">Period</th>
-          <th class="py-4 pr-4">Car</th>
+          <th class="py-4 pr-4">{{ t('common.client') }}</th>
+          <th class="py-4 pr-4">{{ t('common.period') }}</th>
+          <th class="py-4 pr-4">{{ t('common.car') }}</th>
           <th class="py-4 pr-4">{{ t('common.currentStatus') }}</th>
           <th class="py-4 pr-4">{{ t('common.total') }}</th>
-          <th class="py-4 text-right">Actions</th>
+          <th class="py-4 text-right">{{ t('common.actions') }}</th>
         </tr>
       </thead>
       <tbody>

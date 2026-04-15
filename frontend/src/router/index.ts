@@ -1,7 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import LoginPage from '@/pages/auth/LoginPage.vue'
 import RegisterPage from '@/pages/auth/RegisterPage.vue'
-import ClientHomePage from '@/pages/client/ClientHomePage.vue'
 import AvailableCarsPage from '@/pages/client/AvailableCarsPage.vue'
 import RentalCreatePage from '@/pages/client/RentalCreatePage.vue'
 import MyRentalsPage from '@/pages/client/MyRentalsPage.vue'
@@ -16,6 +15,7 @@ import RentalsManagementPage from '@/pages/manager/RentalsManagementPage.vue'
 import TariffFormPage from '@/pages/manager/TariffFormPage.vue'
 import TariffsManagementPage from '@/pages/manager/TariffsManagementPage.vue'
 import PublicHomePage from '@/pages/public/PublicHomePage.vue'
+import AccountPage from '@/pages/shared/AccountPage.vue'
 import ForbiddenPage from '@/pages/shared/ForbiddenPage.vue'
 import NotFoundPage from '@/pages/shared/NotFoundPage.vue'
 import ClientSectionLayout from '@/layouts/ClientSectionLayout.vue'
@@ -50,7 +50,8 @@ const router = createRouter({
       component: ClientSectionLayout,
       meta: { requiresAuth: true, roles: ['CLIENT'] },
       children: [
-        { path: '', component: ClientHomePage },
+        { path: '', redirect: '/' },
+        { path: 'account', component: AccountPage },
         { path: 'search', component: AvailableCarsPage },
         { path: 'rentals', component: MyRentalsPage },
         { path: 'rentals/new', component: RentalCreatePage },
@@ -63,6 +64,7 @@ const router = createRouter({
       meta: { requiresAuth: true, roles: ['FLEET_MANAGER'] },
       children: [
         { path: '', component: ManagerDashboardPage },
+        { path: 'account', component: AccountPage },
         { path: 'cars', component: CarsManagementPage },
         { path: 'cars/new', component: CarFormPage },
         { path: 'cars/:id/edit', component: CarFormPage },
@@ -84,7 +86,7 @@ router.beforeEach((to) => {
   const authStore = useAuthStore(pinia)
 
   if (to.path === '/login' && authStore.isAuthenticated) {
-    return authStore.userRole === 'FLEET_MANAGER' ? '/manager' : '/client'
+    return authStore.userRole === 'FLEET_MANAGER' ? '/manager' : '/'
   }
 
   if (to.meta.requiresAuth && !authStore.isAuthenticated) {

@@ -8,13 +8,13 @@ import StatusBadge from '@/components/common/StatusBadge.vue'
 import { useI18n } from '@/i18n'
 import { useMaintenanceStore } from '@/store/maintenance'
 import { useUiStore } from '@/store/ui'
-import { formatCurrency } from '@/utils/format'
+import { formatCurrency, humanizeEnum } from '@/utils/format'
 import { formatDate } from '@/utils/date'
 
 const router = useRouter()
 const maintenanceStore = useMaintenanceStore()
 const uiStore = useUiStore()
-const { locale } = useI18n()
+const { locale, t } = useI18n()
 
 const filter = ref('ALL')
 const itemToRemove = ref<string | null>(null)
@@ -22,6 +22,7 @@ const itemToRemove = ref<string | null>(null)
 const copy = computed(() =>
   locale.value === 'ru'
     ? {
+        kicker: 'Окна обслуживания',
         title: 'Окна обслуживания',
         subtitle: 'Они влияют на доступность автомобилей в клиентском поиске и блокируют оформление аренды.',
         add: 'Добавить окно',
@@ -35,6 +36,7 @@ const copy = computed(() =>
         confirmText: 'Удаление запрещено для обслуживания в статусе IN_PROGRESS.',
       }
     : {
+        kicker: 'Maintenance windows',
         title: 'Maintenance windows',
         subtitle: 'They affect vehicle availability in client search and block rental creation when needed.',
         add: 'Add window',
@@ -80,7 +82,7 @@ async function removeItem() {
   <section>
     <div class="page-header">
       <div>
-        <p class="page-kicker">Maintenance windows</p>
+        <p class="page-kicker">{{ copy.kicker }}</p>
         <h1 class="page-title">{{ copy.title }}</h1>
         <p class="page-subtitle">{{ copy.subtitle }}</p>
       </div>
@@ -90,9 +92,9 @@ async function removeItem() {
     <div class="card-base p-5">
       <div class="flex flex-wrap gap-2">
         <button class="chip" :class="{ 'chip-active': filter === 'ALL' }" type="button" @click="filter = 'ALL'">{{ copy.all }}</button>
-        <button class="chip" :class="{ 'chip-active': filter === 'SCHEDULED' }" type="button" @click="filter = 'SCHEDULED'">SCHEDULED</button>
-        <button class="chip" :class="{ 'chip-active': filter === 'IN_PROGRESS' }" type="button" @click="filter = 'IN_PROGRESS'">IN_PROGRESS</button>
-        <button class="chip" :class="{ 'chip-active': filter === 'COMPLETED' }" type="button" @click="filter = 'COMPLETED'">COMPLETED</button>
+        <button class="chip" :class="{ 'chip-active': filter === 'SCHEDULED' }" type="button" @click="filter = 'SCHEDULED'">{{ humanizeEnum('SCHEDULED') }}</button>
+        <button class="chip" :class="{ 'chip-active': filter === 'IN_PROGRESS' }" type="button" @click="filter = 'IN_PROGRESS'">{{ humanizeEnum('IN_PROGRESS') }}</button>
+        <button class="chip" :class="{ 'chip-active': filter === 'COMPLETED' }" type="button" @click="filter = 'COMPLETED'">{{ humanizeEnum('COMPLETED') }}</button>
       </div>
     </div>
 
@@ -114,8 +116,8 @@ async function removeItem() {
         </div>
         <p class="mt-4 text-sm text-muted-foreground">{{ item.comment }}</p>
         <div class="mt-5 flex gap-3">
-          <button class="btn-secondary flex-1" type="button" @click="router.push(`/manager/maintenance/${item.id}/edit`)">{{ locale === 'ru' ? 'Редактировать' : 'Edit' }}</button>
-          <button class="btn-secondary flex-1 !text-danger" type="button" @click="itemToRemove = item.id">{{ locale === 'ru' ? 'Удалить' : 'Remove' }}</button>
+          <button class="btn-secondary flex-1" type="button" @click="router.push(`/manager/maintenance/${item.id}/edit`)">{{ t('common.edit') }}</button>
+          <button class="btn-secondary flex-1 !text-danger" type="button" @click="itemToRemove = item.id">{{ t('common.remove') }}</button>
         </div>
       </article>
     </div>
@@ -133,7 +135,7 @@ async function removeItem() {
       :open="Boolean(itemToRemove)"
       :title="copy.confirmTitle"
       :description="copy.confirmText"
-      :confirm-label="locale === 'ru' ? 'Удалить' : 'Remove'"
+      :confirm-label="t('common.remove')"
       danger
       @confirm="removeItem"
       @update:open="!$event ? (itemToRemove = null) : null"

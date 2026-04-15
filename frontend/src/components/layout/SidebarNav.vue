@@ -12,6 +12,7 @@ import {
   Wrench,
 } from 'lucide-vue-next'
 import LanguageSwitcher from '@/components/common/LanguageSwitcher.vue'
+import ThemeToggle from '@/components/common/ThemeToggle.vue'
 import { useI18n } from '@/i18n'
 import { useAuthStore } from '@/store/auth'
 import { navigationItems } from '@/utils/navigation'
@@ -32,6 +33,14 @@ const iconMap = {
 }
 
 const items = computed(() => navigationItems.filter((item) => item.roles.includes('FLEET_MANAGER')))
+
+function isItemActive(to: string) {
+  if (to === '/manager') {
+    return route.path === '/manager'
+  }
+
+  return route.path === to || route.path.startsWith(`${to}/`)
+}
 
 function logout() {
   authStore.logout()
@@ -62,7 +71,7 @@ function logout() {
         :to="item.to"
         class="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium transition"
         :class="
-          route.path === item.to || route.path.startsWith(`${item.to}/`)
+          isItemActive(item.to)
             ? 'bg-gradient-to-r from-primary to-[#8b5cf6] text-white shadow-[0_0_24px_rgba(139,92,246,0.22)]'
             : 'text-white/55 hover:bg-white/[0.04] hover:text-white'
         "
@@ -73,13 +82,14 @@ function logout() {
     </nav>
 
     <div class="border-t border-white/5 px-4 py-4">
-      <div class="mb-3 flex justify-center">
+      <div class="mb-3 flex items-center justify-center gap-2">
         <LanguageSwitcher />
+        <ThemeToggle compact />
       </div>
-      <div class="mb-3 rounded-[24px] border border-white/8 bg-white/[0.03] p-4">
+      <RouterLink to="/manager/account" class="mb-3 block rounded-[24px] border border-white/8 bg-white/[0.03] p-4 transition hover:border-white/15 hover:bg-white/[0.05]">
         <p class="text-sm font-medium text-white">{{ authStore.currentAccount?.fullName }}</p>
         <p class="text-xs text-white/45">{{ authStore.currentAccount?.email }}</p>
-      </div>
+      </RouterLink>
       <button class="btn-secondary w-full justify-center" type="button" @click="logout">
         <LogOut class="h-4 w-4" />
         {{ t('nav.logout') }}

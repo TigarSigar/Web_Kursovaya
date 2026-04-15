@@ -13,7 +13,7 @@ import { useUiStore } from '@/store/ui'
 const authStore = useAuthStore()
 const rentalsStore = useRentalsStore()
 const uiStore = useUiStore()
-const { locale } = useI18n()
+const { locale, t } = useI18n()
 
 const activeTab = ref<'all' | 'active' | 'history'>('all')
 const confirmOpen = ref(false)
@@ -22,6 +22,7 @@ const copy = computed(() =>
   locale.value === 'ru'
     ? {
         title: 'Мои аренды',
+        kicker: 'Клиентские аренды',
         subtitle: 'Следите за статусами заказов и отменяйте аренду только до фактической выдачи автомобиля.',
         none: 'Аренд пока нет',
         noneText: 'После оформления заказа здесь появятся статусы, стоимость и история.',
@@ -35,6 +36,7 @@ const copy = computed(() =>
       }
     : {
         title: 'My Rentals',
+        kicker: 'Client rentals',
         subtitle: 'Track every order, see current status, and cancel only before the vehicle has been issued.',
         none: 'No rentals yet',
         noneText: 'Once a booking is created, you will see the rental status, price, and timeline here.',
@@ -99,16 +101,16 @@ async function confirmCancel() {
   <section>
     <div class="page-header">
       <div>
-        <p class="page-kicker">Client rentals</p>
+        <p class="page-kicker">{{ copy.kicker }}</p>
         <h1 class="page-title">{{ copy.title }}</h1>
         <p class="page-subtitle">{{ copy.subtitle }}</p>
       </div>
     </div>
 
     <div class="mb-6 flex flex-wrap gap-2">
-      <button class="chip" :class="{ 'chip-active': activeTab === 'all' }" type="button" @click="activeTab = 'all'">All</button>
-      <button class="chip" :class="{ 'chip-active': activeTab === 'active' }" type="button" @click="activeTab = 'active'">Active</button>
-      <button class="chip" :class="{ 'chip-active': activeTab === 'history' }" type="button" @click="activeTab = 'history'">History</button>
+      <button class="chip" :class="{ 'chip-active': activeTab === 'all' }" type="button" @click="activeTab = 'all'">{{ t('common.all') }}</button>
+      <button class="chip" :class="{ 'chip-active': activeTab === 'active' }" type="button" @click="activeTab = 'active'">{{ t('common.active') }}</button>
+      <button class="chip" :class="{ 'chip-active': activeTab === 'history' }" type="button" @click="activeTab = 'history'">{{ t('common.history') }}</button>
     </div>
 
     <ErrorState v-if="rentalsStore.error" :message="rentalsStore.error" @retry="authStore.currentClientProfile && rentalsStore.fetchForClient(authStore.currentClientProfile.id)" />

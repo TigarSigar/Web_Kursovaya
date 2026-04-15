@@ -3,6 +3,7 @@ import { computed, onMounted, reactive } from 'vue'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { Car, Eye, EyeOff, Shield } from 'lucide-vue-next'
 import LanguageSwitcher from '@/components/common/LanguageSwitcher.vue'
+import ThemeToggle from '@/components/common/ThemeToggle.vue'
 import { useI18n } from '@/i18n'
 import { useAuthStore } from '@/store/auth'
 import { useUiStore } from '@/store/ui'
@@ -45,7 +46,7 @@ async function login() {
     })
 
     const redirect = typeof route.query.redirect === 'string' ? route.query.redirect : null
-    router.push(redirect ?? (authStore.userRole === 'FLEET_MANAGER' ? '/manager' : '/client'))
+    router.push(redirect ?? (authStore.userRole === 'FLEET_MANAGER' ? '/manager' : '/'))
   } catch (error) {
     uiStore.pushToast({
       type: 'error',
@@ -57,13 +58,21 @@ async function login() {
 </script>
 
 <template>
-  <div class="min-h-screen bg-[#05050d] px-4 py-10 text-white">
-    <div class="mx-auto mb-6 flex max-w-6xl justify-end">
+  <div class="min-h-screen px-4 py-10" :class="uiStore.theme === 'light' ? 'bg-background text-foreground' : 'bg-[#05050d] text-white'">
+    <div class="mx-auto mb-6 flex max-w-6xl justify-end gap-2">
       <LanguageSwitcher />
+      <ThemeToggle />
     </div>
 
     <div class="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[1.1fr_0.9fr]">
-      <section class="relative overflow-hidden rounded-[36px] border border-white/6 bg-[radial-gradient(circle_at_top,_rgba(139,92,246,0.2),_transparent_44%)] p-8 lg:p-12">
+      <section
+        class="relative overflow-hidden rounded-[36px] p-8 lg:p-12"
+        :class="
+          uiStore.theme === 'light'
+            ? 'border border-border bg-[radial-gradient(circle_at_top,_rgba(139,92,246,0.12),_transparent_44%)]'
+            : 'border border-white/6 bg-[radial-gradient(circle_at_top,_rgba(139,92,246,0.2),_transparent_44%)]'
+        "
+      >
         <div class="absolute inset-0 bg-[radial-gradient(circle_at_bottom_right,_rgba(139,92,246,0.12),_transparent_32%)]" />
         <div class="relative">
           <div class="flex items-center gap-3">
@@ -76,34 +85,37 @@ async function login() {
           <h1 class="mt-12 max-w-3xl text-5xl font-semibold leading-[1.08] lg:text-6xl">
             {{ t('auth.heroTitle') }}
           </h1>
-          <p class="mt-6 max-w-2xl text-lg leading-8 text-white/50">
+          <p class="mt-6 max-w-2xl text-lg leading-8" :class="uiStore.theme === 'light' ? 'text-muted-foreground' : 'text-white/50'">
             {{ t('auth.heroSubtitle') }}
           </p>
 
           <div class="mt-12 grid gap-4 md:grid-cols-2">
-            <div class="rounded-3xl border border-white/8 bg-white/[0.03] p-5">
+            <div class="rounded-3xl p-5" :class="uiStore.theme === 'light' ? 'border border-border bg-white/80' : 'border border-white/8 bg-white/[0.03]'">
               <Shield class="h-6 w-6 text-primary" />
               <h2 class="mt-4 text-lg font-semibold">{{ t('auth.availabilityControl') }}</h2>
-              <p class="mt-2 text-sm leading-6 text-white/45">{{ t('auth.availabilityDesc') }}</p>
+              <p class="mt-2 text-sm leading-6" :class="uiStore.theme === 'light' ? 'text-muted-foreground' : 'text-white/45'">{{ t('auth.availabilityDesc') }}</p>
             </div>
-            <div class="rounded-3xl border border-white/8 bg-white/[0.03] p-5">
+            <div class="rounded-3xl p-5" :class="uiStore.theme === 'light' ? 'border border-border bg-white/80' : 'border border-white/8 bg-white/[0.03]'">
               <Shield class="h-6 w-6 text-primary" />
               <h2 class="mt-4 text-lg font-semibold">{{ t('auth.operationalWorkflow') }}</h2>
-              <p class="mt-2 text-sm leading-6 text-white/45">{{ t('auth.operationalDesc') }}</p>
+              <p class="mt-2 text-sm leading-6" :class="uiStore.theme === 'light' ? 'text-muted-foreground' : 'text-white/45'">{{ t('auth.operationalDesc') }}</p>
             </div>
           </div>
         </div>
       </section>
 
-      <section class="rounded-[36px] border border-white/8 bg-[#0b0b15] p-8 shadow-[0_24px_80px_rgba(0,0,0,0.45)]">
+      <section
+        class="rounded-[36px] p-8 shadow-[0_24px_80px_rgba(0,0,0,0.45)]"
+        :class="uiStore.theme === 'light' ? 'border border-border bg-white/88' : 'border border-white/8 bg-[#0b0b15]'"
+      >
         <p class="text-sm font-semibold uppercase tracking-[0.28em] text-primary">{{ t('auth.signIn') }}</p>
         <h2 class="mt-4 text-3xl font-semibold">{{ t('auth.accessAccount') }}</h2>
-        <p class="mt-3 text-sm leading-6 text-white/45">{{ t('auth.chooseWorkspace') }}</p>
+        <p class="mt-3 text-sm leading-6" :class="uiStore.theme === 'light' ? 'text-muted-foreground' : 'text-white/45'">{{ t('auth.chooseWorkspace') }}</p>
 
-        <div class="mt-8 flex rounded-2xl bg-white/[0.04] p-1">
+        <div class="mt-8 flex rounded-2xl p-1" :class="uiStore.theme === 'light' ? 'bg-slate-100' : 'bg-white/[0.04]'">
           <button
             class="flex-1 rounded-xl px-4 py-3 text-sm font-semibold transition"
-            :class="form.role === 'CLIENT' ? 'bg-primary text-white shadow-[0_0_20px_rgba(139,92,246,0.25)]' : 'text-white/55'"
+            :class="form.role === 'CLIENT' ? 'bg-primary text-white shadow-[0_0_20px_rgba(139,92,246,0.25)]' : uiStore.theme === 'light' ? 'text-slate-500' : 'text-white/55'"
             type="button"
             @click="form.role = 'CLIENT'; form.email = 'client@carrent.local'"
           >
@@ -111,7 +123,7 @@ async function login() {
           </button>
           <button
             class="flex-1 rounded-xl px-4 py-3 text-sm font-semibold transition"
-            :class="form.role === 'FLEET_MANAGER' ? 'bg-primary text-white shadow-[0_0_20px_rgba(139,92,246,0.25)]' : 'text-white/55'"
+            :class="form.role === 'FLEET_MANAGER' ? 'bg-primary text-white shadow-[0_0_20px_rgba(139,92,246,0.25)]' : uiStore.theme === 'light' ? 'text-slate-500' : 'text-white/55'"
             type="button"
             @click="form.role = 'FLEET_MANAGER'; form.email = 'manager@carrent.local'"
           >
@@ -121,19 +133,20 @@ async function login() {
 
         <form class="mt-8 space-y-5" @submit.prevent="login">
           <label class="field-group">
-            <span class="!text-white/85 field-label">{{ t('auth.email') }}</span>
-            <input v-model="form.email" class="input-base !border-white/8 !bg-white/[0.03] !text-white" type="email" />
+            <span class="field-label" :class="uiStore.theme === 'light' ? '!text-foreground' : '!text-white/85'">{{ t('auth.email') }}</span>
+            <input v-model="form.email" class="input-base" :class="uiStore.theme === 'light' ? '!border-border !bg-white !text-foreground' : '!border-white/8 !bg-white/[0.03] !text-white'" type="email" />
           </label>
 
           <label class="field-group">
-            <span class="!text-white/85 field-label">{{ t('auth.password') }}</span>
+            <span class="field-label" :class="uiStore.theme === 'light' ? '!text-foreground' : '!text-white/85'">{{ t('auth.password') }}</span>
             <div class="relative">
               <input
                 v-model="form.password"
-                class="input-base !border-white/8 !bg-white/[0.03] !pr-12 !text-white"
+                class="input-base !pr-12"
+                :class="uiStore.theme === 'light' ? '!border-border !bg-white !text-foreground' : '!border-white/8 !bg-white/[0.03] !text-white'"
                 :type="showPassword.value ? 'text' : 'password'"
               />
-              <button class="absolute right-4 top-1/2 -translate-y-1/2 text-white/45" type="button" @click="showPassword.value = !showPassword.value">
+              <button class="absolute right-4 top-1/2 -translate-y-1/2" :class="uiStore.theme === 'light' ? 'text-slate-500' : 'text-white/45'" type="button" @click="showPassword.value = !showPassword.value">
                 <Eye v-if="!showPassword.value" class="h-5 w-5" />
                 <EyeOff v-else class="h-5 w-5" />
               </button>
@@ -145,7 +158,7 @@ async function login() {
           </button>
         </form>
 
-        <div class="mt-6 text-center text-sm text-white/45">
+        <div class="mt-6 text-center text-sm" :class="uiStore.theme === 'light' ? 'text-muted-foreground' : 'text-white/45'">
           {{ t('auth.noAccount') }}
           <RouterLink class="ml-2 font-semibold text-primary hover:text-white" to="/register">{{ t('auth.goRegister') }}</RouterLink>
         </div>

@@ -3,6 +3,7 @@ import { computed, reactive } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
 import { Car, Shield, UserPlus } from 'lucide-vue-next'
 import LanguageSwitcher from '@/components/common/LanguageSwitcher.vue'
+import ThemeToggle from '@/components/common/ThemeToggle.vue'
 import { useI18n } from '@/i18n'
 import { useAuthStore } from '@/store/auth'
 import { useUiStore } from '@/store/ui'
@@ -49,13 +50,21 @@ async function register() {
 </script>
 
 <template>
-  <div class="min-h-screen bg-[#05050d] px-4 py-10 text-white">
-    <div class="mx-auto mb-6 flex max-w-6xl justify-end">
+  <div class="min-h-screen px-4 py-10" :class="uiStore.theme === 'light' ? 'bg-background text-foreground' : 'bg-[#05050d] text-white'">
+    <div class="mx-auto mb-6 flex max-w-6xl justify-end gap-2">
       <LanguageSwitcher />
+      <ThemeToggle />
     </div>
 
     <div class="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[1.1fr_0.9fr]">
-      <section class="relative overflow-hidden rounded-[36px] border border-white/6 bg-[radial-gradient(circle_at_top,_rgba(139,92,246,0.2),_transparent_44%)] p-8 lg:p-12">
+      <section
+        class="relative overflow-hidden rounded-[36px] p-8 lg:p-12"
+        :class="
+          uiStore.theme === 'light'
+            ? 'border border-border bg-[radial-gradient(circle_at_top,_rgba(139,92,246,0.12),_transparent_44%)]'
+            : 'border border-white/6 bg-[radial-gradient(circle_at_top,_rgba(139,92,246,0.2),_transparent_44%)]'
+        "
+      >
         <div class="absolute inset-0 bg-[radial-gradient(circle_at_bottom_right,_rgba(139,92,246,0.12),_transparent_32%)]" />
         <div class="relative">
           <div class="flex items-center gap-3">
@@ -68,22 +77,22 @@ async function register() {
           <h1 class="mt-12 max-w-3xl text-5xl font-semibold leading-[1.08] lg:text-6xl">
             {{ t('auth.registerTitle') }}
           </h1>
-          <p class="mt-6 max-w-2xl text-lg leading-8 text-white/50">
+          <p class="mt-6 max-w-2xl text-lg leading-8" :class="uiStore.theme === 'light' ? 'text-muted-foreground' : 'text-white/50'">
             {{ t('auth.registerSubtitle') }}
           </p>
 
           <div class="mt-12 grid gap-4 md:grid-cols-2">
-            <div class="rounded-3xl border border-white/8 bg-white/[0.03] p-5">
+            <div class="rounded-3xl p-5" :class="uiStore.theme === 'light' ? 'border border-border bg-white/80' : 'border border-white/8 bg-white/[0.03]'">
               <UserPlus class="h-6 w-6 text-primary" />
               <h2 class="mt-4 text-lg font-semibold">{{ locale === 'ru' ? 'Быстрый старт' : 'Fast onboarding' }}</h2>
-              <p class="mt-2 text-sm leading-6 text-white/45">
+              <p class="mt-2 text-sm leading-6" :class="uiStore.theme === 'light' ? 'text-muted-foreground' : 'text-white/45'">
                 {{ locale === 'ru' ? 'Создайте аккаунт и сразу переходите к поиску доступных автомобилей.' : 'Create an account and jump straight into vehicle search.' }}
               </p>
             </div>
-            <div class="rounded-3xl border border-white/8 bg-white/[0.03] p-5">
+            <div class="rounded-3xl p-5" :class="uiStore.theme === 'light' ? 'border border-border bg-white/80' : 'border border-white/8 bg-white/[0.03]'">
               <Shield class="h-6 w-6 text-primary" />
               <h2 class="mt-4 text-lg font-semibold">{{ locale === 'ru' ? 'Безопасный сценарий' : 'Secure access' }}</h2>
-              <p class="mt-2 text-sm leading-6 text-white/45">
+              <p class="mt-2 text-sm leading-6" :class="uiStore.theme === 'light' ? 'text-muted-foreground' : 'text-white/45'">
                 {{ locale === 'ru' ? 'Доступ к клиентской зоне, арендам и статусам активируется сразу после регистрации.' : 'Client area, rentals, and status tracking become available right after sign up.' }}
               </p>
             </div>
@@ -91,30 +100,33 @@ async function register() {
         </div>
       </section>
 
-      <section class="rounded-[36px] border border-white/8 bg-[#0b0b15] p-8 shadow-[0_24px_80px_rgba(0,0,0,0.45)]">
+      <section
+        class="rounded-[36px] p-8 shadow-[0_24px_80px_rgba(0,0,0,0.45)]"
+        :class="uiStore.theme === 'light' ? 'border border-border bg-white/88' : 'border border-white/8 bg-[#0b0b15]'"
+      >
         <p class="text-sm font-semibold uppercase tracking-[0.28em] text-primary">{{ t('nav.register') }}</p>
         <h2 class="mt-4 text-3xl font-semibold">{{ t('auth.createAccount') }}</h2>
-        <p class="mt-3 text-sm leading-6 text-white/45">{{ t('auth.registerSubtitle') }}</p>
+        <p class="mt-3 text-sm leading-6" :class="uiStore.theme === 'light' ? 'text-muted-foreground' : 'text-white/45'">{{ t('auth.registerSubtitle') }}</p>
 
         <form class="mt-8 space-y-5" @submit.prevent="register">
           <label class="field-group">
-            <span class="!text-white/85 field-label">{{ t('auth.fullName') }}</span>
-            <input v-model="form.fullName" class="input-base !border-white/8 !bg-white/[0.03] !text-white" type="text" />
+            <span class="field-label" :class="uiStore.theme === 'light' ? '!text-foreground' : '!text-white/85'">{{ t('auth.fullName') }}</span>
+            <input v-model="form.fullName" class="input-base" :class="uiStore.theme === 'light' ? '!border-border !bg-white !text-foreground' : '!border-white/8 !bg-white/[0.03] !text-white'" type="text" />
           </label>
 
           <label class="field-group">
-            <span class="!text-white/85 field-label">{{ t('auth.email') }}</span>
-            <input v-model="form.email" class="input-base !border-white/8 !bg-white/[0.03] !text-white" type="email" />
+            <span class="field-label" :class="uiStore.theme === 'light' ? '!text-foreground' : '!text-white/85'">{{ t('auth.email') }}</span>
+            <input v-model="form.email" class="input-base" :class="uiStore.theme === 'light' ? '!border-border !bg-white !text-foreground' : '!border-white/8 !bg-white/[0.03] !text-white'" type="email" />
           </label>
 
           <label class="field-group">
-            <span class="!text-white/85 field-label">{{ t('auth.phone') }}</span>
-            <input v-model="form.phone" class="input-base !border-white/8 !bg-white/[0.03] !text-white" type="tel" />
+            <span class="field-label" :class="uiStore.theme === 'light' ? '!text-foreground' : '!text-white/85'">{{ t('auth.phone') }}</span>
+            <input v-model="form.phone" class="input-base" :class="uiStore.theme === 'light' ? '!border-border !bg-white !text-foreground' : '!border-white/8 !bg-white/[0.03] !text-white'" type="tel" />
           </label>
 
           <label class="field-group">
-            <span class="!text-white/85 field-label">{{ t('auth.password') }}</span>
-            <input v-model="form.password" class="input-base !border-white/8 !bg-white/[0.03] !text-white" type="password" />
+            <span class="field-label" :class="uiStore.theme === 'light' ? '!text-foreground' : '!text-white/85'">{{ t('auth.password') }}</span>
+            <input v-model="form.password" class="input-base" :class="uiStore.theme === 'light' ? '!border-border !bg-white !text-foreground' : '!border-white/8 !bg-white/[0.03] !text-white'" type="password" />
           </label>
 
           <button class="flex w-full items-center justify-center rounded-2xl bg-gradient-to-r from-primary to-[#8b5cf6] px-6 py-4 text-lg font-semibold text-white shadow-[0_0_30px_rgba(139,92,246,0.28)] disabled:opacity-60" :disabled="!canSubmit" type="submit">
@@ -122,7 +134,7 @@ async function register() {
           </button>
         </form>
 
-        <div class="mt-6 text-center text-sm text-white/45">
+        <div class="mt-6 text-center text-sm" :class="uiStore.theme === 'light' ? 'text-muted-foreground' : 'text-white/45'">
           {{ t('auth.haveAccount') }}
           <RouterLink class="ml-2 font-semibold text-primary hover:text-white" to="/login">{{ t('auth.goLogin') }}</RouterLink>
         </div>

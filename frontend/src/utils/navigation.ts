@@ -8,8 +8,8 @@ export interface NavItem {
 }
 
 export const navigationItems: NavItem[] = [
-  { labelKey: 'nav.home', to: '/client', icon: 'House', roles: ['CLIENT'] },
-  { labelKey: 'nav.cars', to: '/client/search', icon: 'Search', roles: ['CLIENT'] },
+  { labelKey: 'nav.home', to: '/', icon: 'House', roles: ['CLIENT'] },
+  { labelKey: 'nav.cars', to: '/cars', icon: 'Search', roles: ['CLIENT'] },
   { labelKey: 'nav.myRentals', to: '/client/rentals', icon: 'ClipboardList', roles: ['CLIENT'] },
   { labelKey: 'nav.dashboard', to: '/manager', icon: 'LayoutDashboard', roles: ['FLEET_MANAGER'] },
   { labelKey: 'nav.cars', to: '/manager/cars', icon: 'Car', roles: ['FLEET_MANAGER'] },

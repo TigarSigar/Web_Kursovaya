@@ -13,11 +13,12 @@ const router = useRouter()
 const tariffsStore = useTariffsStore()
 const uiStore = useUiStore()
 const tariffToRemove = ref<string | null>(null)
-const { locale } = useI18n()
+const { locale, t } = useI18n()
 
 const copy = computed(() =>
   locale.value === 'ru'
     ? {
+        kicker: 'Тарифы',
         title: 'Управление тарифами',
         subtitle: 'Тарифы используются при расчёте стоимости аренды и должны быть понятны клиенту.',
         add: 'Добавить тариф',
@@ -30,6 +31,7 @@ const copy = computed(() =>
         confirmText: 'Тариф нельзя удалить, если он участвует в активных арендах.',
       }
     : {
+        kicker: 'Tariffs',
         title: 'Tariff management',
         subtitle: 'Tariffs are used in rental pricing and should stay clear and explainable for clients.',
         add: 'Add tariff',
@@ -73,7 +75,7 @@ async function removeTariff() {
   <section>
     <div class="page-header">
       <div>
-        <p class="page-kicker">Tariffs</p>
+        <p class="page-kicker">{{ copy.kicker }}</p>
         <h1 class="page-title">{{ copy.title }}</h1>
         <p class="page-subtitle">{{ copy.subtitle }}</p>
       </div>
@@ -104,8 +106,8 @@ async function removeTariff() {
           <li v-for="restriction in tariff.restrictions" :key="restriction">• {{ restriction }}</li>
         </ul>
         <div class="mt-5 flex gap-3">
-          <button class="btn-secondary flex-1" type="button" @click="router.push(`/manager/tariffs/${tariff.id}/edit`)">{{ locale === 'ru' ? 'Редактировать' : 'Edit' }}</button>
-          <button class="btn-secondary flex-1 !text-danger" type="button" @click="tariffToRemove = tariff.id">{{ locale === 'ru' ? 'Удалить' : 'Remove' }}</button>
+          <button class="btn-secondary flex-1" type="button" @click="router.push(`/manager/tariffs/${tariff.id}/edit`)">{{ t('common.edit') }}</button>
+          <button class="btn-secondary flex-1 !text-danger" type="button" @click="tariffToRemove = tariff.id">{{ t('common.remove') }}</button>
         </div>
       </article>
     </div>
@@ -122,7 +124,7 @@ async function removeTariff() {
       :open="Boolean(tariffToRemove)"
       :title="copy.confirmTitle"
       :description="copy.confirmText"
-      :confirm-label="locale === 'ru' ? 'Удалить' : 'Remove'"
+      :confirm-label="t('common.remove')"
       danger
       @confirm="removeTariff"
       @update:open="!$event ? (tariffToRemove = null) : null"

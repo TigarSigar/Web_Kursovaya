@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { UserRole } from '@/types/entities'
+import PublicNavbar from '@/components/layout/PublicNavbar.vue'
 import SidebarNav from '@/components/layout/SidebarNav.vue'
-import TopBar from '@/components/layout/TopBar.vue'
 
 defineProps<{
   role: UserRole
@@ -10,5 +10,5 @@ defineProps<{
 
 <template>
   <SidebarNav v-if="role === 'FLEET_MANAGER'" />
-  <TopBar v-else />
+  <PublicNavbar v-else />
 </template>
