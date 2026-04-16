@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import ErrorState from '@/components/common/ErrorState.vue'
@@ -20,9 +20,14 @@ const uiStore = useUiStore()
 const { locale } = useI18n()
 
 const confirmOpen = ref(false)
+const selectedImageIndex = ref(0)
 const rentalId = computed(() => route.params.id as string)
 const rental = computed(() => rentalsStore.currentRental)
 const canCancel = computed(() => ['CREATED', 'CONFIRMED'].includes(rental.value?.status ?? ''))
+const imageUrls = computed(() =>
+  rental.value?.car?.imageUrls?.length ? rental.value.car.imageUrls : rental.value?.car?.imageUrl ? [rental.value.car.imageUrl] : [],
+)
+const selectedImage = computed(() => imageUrls.value[selectedImageIndex.value] ?? '/car-placeholder.svg')
 const breakdown = computed(() =>
   rental.value
     ? {
@@ -40,6 +45,7 @@ const copy = computed(() =>
         title: 'Детали аренды',
         subtitle: 'Проверьте статус, даты, автомобиль, расчёт стоимости и историю изменения заказа.',
         period: 'Период аренды',
+        photos: 'Фотографии автомобиля',
         actualReturn: 'Фактический возврат',
         pickup: 'Точка выдачи',
         return: 'Точка возврата',
@@ -60,6 +66,7 @@ const copy = computed(() =>
         title: 'Order Overview',
         subtitle: 'Review timing, status, vehicle, pricing logic, and the complete status history of the rental.',
         period: 'Rental period',
+        photos: 'Vehicle photos',
         actualReturn: 'Actual return',
         pickup: 'Pickup location',
         return: 'Return location',
@@ -86,6 +93,10 @@ async function loadRental() {
 }
 
 onMounted(loadRental)
+
+watch(rental, () => {
+  selectedImageIndex.value = 0
+})
 
 async function cancelRental() {
   if (!rental.value || !authStore.currentClientProfile) {
@@ -131,6 +142,25 @@ async function cancelRental() {
               <p class="mt-2 text-sm text-white/45">{{ rental.car?.plateNumber }} • {{ rental.car?.location }}</p>
             </div>
             <StatusBadge :status="rental.status" />
+          </div>
+
+          <div class="mt-6 overflow-hidden rounded-lg border border-white/10 bg-white/[0.03]">
+            <img :src="selectedImage" alt="" class="h-72 w-full object-cover" />
+          </div>
+          <div v-if="imageUrls.length > 1" class="mt-4">
+            <p class="text-sm text-white/45">{{ copy.photos }}</p>
+            <div class="mt-3 grid grid-cols-2 gap-3 md:grid-cols-4">
+              <button
+                v-for="(imageUrl, index) in imageUrls"
+                :key="`${imageUrl}-${index}`"
+                class="overflow-hidden rounded-lg border transition"
+                :class="selectedImageIndex === index ? 'border-primary' : 'border-white/10'"
+                type="button"
+                @click="selectedImageIndex = index"
+              >
+                <img :src="imageUrl" alt="" class="h-24 w-full object-cover" />
+              </button>
+            </div>
           </div>
 
           <div class="mt-6 grid gap-4 md:grid-cols-2">

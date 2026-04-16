@@ -34,6 +34,7 @@ export interface Car {
   location: string
   odometerKm: number
   imageUrl?: string
+  imageUrls?: string[]
   notes?: string
 }
 
@@ -157,7 +158,7 @@ export interface CarFormModel {
   fuelType: FuelType
   location: string
   odometerKm: number
-  imageUrl: string
+  imageUrls: string[]
   notes: string
 }
 

@@ -52,7 +52,10 @@ function nextId(prefix: string): string {
 function hydrateRental(state: MockDatabaseState, rental: RentalOrder): RentalOrder {
   return {
     ...rental,
-    car: state.cars.find((car) => car.id === rental.carId),
+    car: (() => {
+      const car = state.cars.find((item) => item.id === rental.carId)
+      return car ? normalizeCar(car) : undefined
+    })(),
     client: state.clients.find((client) => client.id === rental.clientId),
     tariff: state.tariffs.find((tariff) => tariff.id === rental.tariffId),
   }
@@ -72,7 +75,20 @@ function ensureCarExists(state: MockDatabaseState, carId: string): Car {
     throw new ApiError('Автомобиль не найден.', 404)
   }
 
-  return car
+  return normalizeCar(car)
+}
+
+function normalizeCar(car: Car): Car {
+  const imageUrls = (car.imageUrls ?? []).filter(Boolean)
+  if (imageUrls.length > 0) {
+    return { ...car, imageUrls, imageUrl: imageUrls[0] }
+  }
+
+  if (car.imageUrl && !car.imageUrl.endsWith('.svg')) {
+    return { ...car, imageUrls: [car.imageUrl] }
+  }
+
+  return { ...car, imageUrls: [], imageUrl: undefined }
 }
 
 function ensureTariffExists(state: MockDatabaseState, tariffId: string): Tariff {
@@ -187,7 +203,7 @@ export const mockDb = {
   },
 
   async listCars(): Promise<Car[]> {
-    return delay(readState().cars)
+    return delay(readState().cars.map((car) => normalizeCar(car)))
   },
 
   async getCar(carId: string): Promise<Car> {
@@ -197,7 +213,7 @@ export const mockDb = {
 
   async createCar(payload: Omit<Car, 'id'>): Promise<Car> {
     const state = readState()
-    const car: Car = { ...payload, id: nextId('car') }
+    const car: Car = normalizeCar({ ...payload, id: nextId('car') })
     state.cars.unshift(car)
     writeState(state)
     return delay(car)
@@ -206,7 +222,7 @@ export const mockDb = {
   async updateCar(carId: string, payload: Omit<Car, 'id'>): Promise<Car> {
     const state = readState()
     ensureCarExists(state, carId)
-    const updatedCar = { ...payload, id: carId }
+    const updatedCar = normalizeCar({ ...payload, id: carId })
     state.cars = state.cars.map((car) => (car.id === carId ? updatedCar : car))
     writeState(state)
     return delay(updatedCar)

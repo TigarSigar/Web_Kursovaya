@@ -105,7 +105,7 @@ watch(() => route.fullPath, runSearch)
 </script>
 
 <template>
-  <section class="mx-auto max-w-7xl px-4 py-8 lg:px-8 lg:py-10">
+  <section class="available-cars-page mx-auto max-w-7xl px-4 py-8 lg:px-8 lg:py-10">
     <div class="page-header">
       <div>
         <p class="page-kicker">{{ copy.kicker }}</p>
@@ -129,10 +129,10 @@ watch(() => route.fullPath, runSearch)
       </template>
 
       <template v-else>
-        <section>
-          <div class="mb-4 flex items-center justify-between">
-            <h2 class="text-xl font-semibold text-white">{{ copy.ready }}</h2>
-            <p class="text-sm text-white/45">{{ available.length }} {{ copy.vehicles }}</p>
+        <section class="available-cars-page__section">
+          <div class="available-cars-page__section-header">
+            <h2 class="available-cars-page__section-title">{{ copy.ready }}</h2>
+            <p class="available-cars-page__section-count">{{ available.length }} {{ copy.vehicles }}</p>
           </div>
           <div v-if="available.length" class="grid gap-6 xl:grid-cols-2">
             <CarCard
@@ -154,10 +154,10 @@ watch(() => route.fullPath, runSearch)
           </EmptyState>
         </section>
 
-        <section class="mt-10">
-          <div class="mb-4 flex items-center justify-between">
-            <h2 class="text-xl font-semibold text-white">{{ copy.unavailable }}</h2>
-            <p class="text-sm text-white/45">{{ unavailable.length }} {{ copy.vehicles }}</p>
+        <section class="available-cars-page__section mt-10">
+          <div class="available-cars-page__section-header">
+            <h2 class="available-cars-page__section-title">{{ copy.unavailable }}</h2>
+            <p class="available-cars-page__section-count">{{ unavailable.length }} {{ copy.vehicles }}</p>
           </div>
           <div v-if="unavailable.length" class="grid gap-6 xl:grid-cols-2">
             <CarCard v-for="item in unavailable" :key="item.car.id" :car="item.car" :result="item" :theme="uiStore.theme" />
@@ -167,3 +167,26 @@ watch(() => route.fullPath, runSearch)
     </div>
   </section>
 </template>
+
+<style scoped lang="scss">
+.available-cars-page {
+  &__section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  &__section-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: rgb(var(--color-foreground));
+  }
+
+  &__section-count {
+    font-size: 14px;
+    color: var(--text-muted);
+  }
+}
+</style>

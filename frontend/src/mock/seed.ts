@@ -64,7 +64,7 @@ export const seedState: MockDatabaseState = {
       fuelType: 'PETROL',
       location: 'Новосибирск, Центр',
       odometerKm: 21500,
-      imageUrl: '/car-placeholder.svg',
+      imageUrls: [],
       notes: 'Основной городской автомобиль для коротких и средних поездок.',
     },
     {
@@ -81,7 +81,7 @@ export const seedState: MockDatabaseState = {
       fuelType: 'PETROL',
       location: 'Аэропорт Толмачево',
       odometerKm: 38210,
-      imageUrl: '/car-placeholder.svg',
+      imageUrls: [],
       notes: 'Экономичный вариант для аренды от 1 суток.',
     },
     {
@@ -98,7 +98,7 @@ export const seedState: MockDatabaseState = {
       fuelType: 'HYBRID',
       location: 'Новосибирск, Центр',
       odometerKm: 14120,
-      imageUrl: '/car-placeholder.svg',
+      imageUrls: [],
       notes: 'Часто используется для корпоративных клиентов.',
     },
     {
@@ -115,7 +115,7 @@ export const seedState: MockDatabaseState = {
       fuelType: 'PETROL',
       location: 'Академгородок',
       odometerKm: 8600,
-      imageUrl: '/car-placeholder.svg',
+      imageUrls: [],
       notes: 'Подходит для поездок за город и семейных маршрутов.',
     },
     {
@@ -132,7 +132,7 @@ export const seedState: MockDatabaseState = {
       fuelType: 'PETROL',
       location: 'Новосибирск, Центр',
       odometerKm: 55200,
-      imageUrl: '/car-placeholder.svg',
+      imageUrls: [],
       notes: 'Снят с выдачи до решения по капитальному ремонту.',
     },
     {
@@ -149,7 +149,7 @@ export const seedState: MockDatabaseState = {
       fuelType: 'PETROL',
       location: 'ЖД вокзал',
       odometerKm: 47400,
-      imageUrl: '/car-placeholder.svg',
+      imageUrls: [],
       notes: 'Сейчас проходит плановое обслуживание.',
     },
   ],

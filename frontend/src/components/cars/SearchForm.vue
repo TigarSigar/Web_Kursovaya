@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, watch } from 'vue'
+import { computed, reactive, watch } from 'vue'
 import { useI18n } from '@/i18n'
 import type { SearchCarsParams } from '@/types/entities'
 import { CAR_CLASSES } from '@/types/entities'
@@ -25,6 +25,7 @@ const props = withDefaults(
 const emit = defineEmits<{
   submit: [value: SearchCarsParams]
 }>()
+
 const { t } = useI18n()
 
 const form = reactive<SearchCarsParams>({
@@ -33,6 +34,8 @@ const form = reactive<SearchCarsParams>({
   location: props.initial.location ?? '',
   carClass: props.initial.carClass ?? '',
 })
+
+const rootClass = computed(() => ['search-form', `search-form--${props.theme}`, { 'search-form--compact': props.compact }])
 
 watch(
   () => props.initial,
@@ -59,55 +62,122 @@ function getRangeError(): string {
 </script>
 
 <template>
-  <form
-    class="rounded-[28px] p-6 backdrop-blur"
-    :class="[
-      compact ? 'p-4' : '',
-      theme === 'dark'
-        ? 'border border-white/8 bg-[#0b0b15]/72 shadow-[0_0_0_1px_rgba(255,255,255,0.02)]'
-        : 'border border-border bg-white/85 shadow-soft',
-    ]"
-    @submit.prevent="submit"
-  >
-    <div class="grid gap-4" :class="compact ? 'lg:grid-cols-[1fr_2fr_1fr_auto]' : 'lg:grid-cols-4'">
+  <form :class="rootClass" @submit.prevent="submit">
+    <div class="search-form__grid">
       <label class="field-group">
-        <span class="field-label" :class="theme === 'dark' ? '!text-white' : ''">{{ t('search.pickupLocation') }}</span>
-        <select v-model="form.location" class="input-base" :class="theme === 'dark' ? '!border-white/8 !bg-white/[0.03] !text-white' : ''">
+        <span class="field-label">{{ t('search.pickupLocation') }}</span>
+        <select v-model="form.location" class="input-base">
           <option value="">{{ t('search.anyLocation') }}</option>
           <option v-for="location in locations" :key="location" :value="location">{{ location }}</option>
         </select>
       </label>
 
-      <div class="lg:col-span-2">
+      <div class="search-form__dates">
         <DateRangePicker v-model:from="form.from" v-model:to="form.to" :error="getRangeError()" :theme="theme" />
       </div>
 
       <label class="field-group">
-        <span class="field-label" :class="theme === 'dark' ? '!text-white' : ''">{{ t('search.vehicleClass') }}</span>
-        <select v-model="form.carClass" class="input-base" :class="theme === 'dark' ? '!border-white/8 !bg-white/[0.03] !text-white' : ''">
+        <span class="field-label">{{ t('search.vehicleClass') }}</span>
+        <select v-model="form.carClass" class="input-base">
           <option value="">{{ t('search.anyClass') }}</option>
           <option v-for="carClass in CAR_CLASSES" :key="carClass" :value="carClass">{{ humanizeEnum(carClass) }}</option>
         </select>
       </label>
     </div>
 
-    <div class="mt-5 flex flex-wrap items-center justify-between gap-3">
-      <div class="flex flex-wrap gap-2 text-sm">
-        <span class="rounded-full px-3 py-1" :class="theme === 'dark' ? 'bg-white/[0.04] text-white/50' : 'bg-primary/10 text-primary'">{{ t('search.availabilityVerified') }}</span>
-        <span class="rounded-full px-3 py-1" :class="theme === 'dark' ? 'bg-white/[0.04] text-white/50' : 'bg-slate-100 text-muted-foreground'">{{ t('search.instantConfirmation') }}</span>
-        <span class="rounded-full px-3 py-1" :class="theme === 'dark' ? 'bg-white/[0.04] text-white/50' : 'bg-slate-100 text-muted-foreground'">{{ t('search.noHiddenFees') }}</span>
+    <div class="search-form__footer">
+      <div class="search-form__chips">
+        <span class="search-form__chip search-form__chip--accent">{{ t('search.availabilityVerified') }}</span>
+        <span class="search-form__chip">{{ t('search.instantConfirmation') }}</span>
+        <span class="search-form__chip">{{ t('search.noHiddenFees') }}</span>
       </div>
-      <button
-        class="min-w-[180px] justify-center rounded-2xl px-6 py-4 text-lg font-semibold"
-        :class="
-          theme === 'dark'
-            ? 'bg-gradient-to-r from-primary to-[#8b5cf6] text-white shadow-[0_0_30px_rgba(139,92,246,0.28)]'
-            : 'btn-primary'
-        "
-        type="submit"
-      >
+
+      <button class="btn-primary search-form__submit" type="submit">
         {{ t('search.submit') }}
       </button>
     </div>
   </form>
 </template>
+
+<style scoped lang="scss">
+.search-form {
+  padding: 24px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  background: var(--surface-panel);
+  backdrop-filter: blur(18px);
+  box-shadow: var(--shadow-panel);
+
+  &--compact {
+    padding: 16px;
+  }
+
+  &__grid {
+    display: grid;
+    gap: 16px;
+    grid-template-columns: 1fr;
+  }
+
+  &__dates {
+    min-width: 0;
+  }
+
+  &__footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 20px;
+  }
+
+  &__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  &__chip {
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: var(--surface-glass);
+    color: var(--text-soft);
+    font-size: 14px;
+
+    &--accent {
+      background: rgba(var(--color-primary), 0.12);
+      color: rgb(var(--color-primary));
+    }
+  }
+
+  &__submit {
+    min-width: 180px;
+    justify-content: center;
+    padding: 16px 24px;
+    font-size: 18px;
+    font-weight: 700;
+  }
+}
+
+@media (min-width: 1024px) {
+  .search-form {
+    &__grid {
+      grid-template-columns: 1fr 2fr 1fr;
+    }
+
+    &--compact .search-form__grid {
+      grid-template-columns: 1fr 2fr 1fr;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .search-form {
+    padding: 16px;
+
+    &__submit {
+      width: 100%;
+    }
+  }
+}
+</style>
