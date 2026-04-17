@@ -3,10 +3,13 @@ package com.cargo.backend.maintenance.service
 import com.cargo.backend.car.repository.CarRepository
 import com.cargo.backend.common.error.ConflictException
 import com.cargo.backend.common.error.ResourceNotFoundException
+import com.cargo.backend.common.mapping.orDefault
+import com.cargo.backend.common.mapping.toFrontendResponse
 import com.cargo.backend.maintenance.api.dto.MaintenanceWindowCreateRequest
 import com.cargo.backend.maintenance.api.dto.MaintenanceWindowResponse
 import com.cargo.backend.maintenance.api.dto.MaintenanceWindowUpdateRequest
 import com.cargo.backend.maintenance.domain.MaintenanceWindow
+import com.cargo.backend.maintenance.domain.MaintenanceStatus
 import com.cargo.backend.maintenance.repository.MaintenanceWindowRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -35,8 +38,13 @@ class MaintenanceWindowServiceImpl(
             car = car,
             startDate = request.startDate,
             endDate = request.endDate,
-            description = request.description.trim()
+            description = request.description.trim(),
+            serviceType = request.serviceType.trim(),
+            comment = request.comment?.trim()?.ifBlank { null },
+            status = request.status,
+            estimatedCost = request.estimatedCost
         )
+        syncCarStatus(entity)
         return maintenanceWindowRepository.save(entity).toResponse()
     }
 
@@ -51,12 +59,22 @@ class MaintenanceWindowServiceImpl(
         entity.startDate = request.startDate
         entity.endDate = request.endDate
         entity.description = request.description.trim()
+        entity.serviceType = request.serviceType.trim()
+        entity.comment = request.comment?.trim()?.ifBlank { null }
+        entity.status = request.status
+        entity.estimatedCost = request.estimatedCost
+        syncCarStatus(entity)
         return maintenanceWindowRepository.save(entity).toResponse()
     }
 
     @Transactional
     override fun delete(id: Long) {
-        maintenanceWindowRepository.delete(findEntity(id))
+        val entity = findEntity(id)
+        val car = entity.car
+        maintenanceWindowRepository.delete(entity)
+        if (car.status == com.cargo.backend.car.domain.CarStatus.MAINTENANCE) {
+            car.status = com.cargo.backend.car.domain.CarStatus.AVAILABLE
+        }
     }
 
     private fun validateDateRange(startDate: java.time.LocalDate, endDate: java.time.LocalDate) {
@@ -94,12 +112,22 @@ class MaintenanceWindowServiceImpl(
     private fun MaintenanceWindow.toResponse() = MaintenanceWindowResponse(
         id = id ?: throw IllegalStateException("Maintenance window id is null"),
         carId = car.id ?: throw IllegalStateException("Car id is null"),
-        carVin = car.vin,
-        carPlateNumber = car.plateNumber,
-        startDate = startDate,
-        endDate = endDate,
-        description = description,
+        from = startDate.toString(),
+        to = endDate.toString(),
+        serviceType = serviceType ?: description,
+        comment = comment ?: description,
+        status = status ?: MaintenanceStatus.SCHEDULED,
+        estimatedCost = estimatedCost,
+        car = car.toFrontendResponse(),
         createdAt = createdAt,
         updatedAt = updatedAt
     )
+
+    private fun syncCarStatus(window: MaintenanceWindow) {
+        if (window.status.orDefault() == MaintenanceStatus.IN_PROGRESS) {
+            window.car.status = com.cargo.backend.car.domain.CarStatus.MAINTENANCE
+        } else if (window.car.status == com.cargo.backend.car.domain.CarStatus.MAINTENANCE) {
+            window.car.status = com.cargo.backend.car.domain.CarStatus.AVAILABLE
+        }
+    }
 }

@@ -4,7 +4,7 @@ import { router } from '@/router'
 import { pinia } from '@/store'
 import { useAuthStore } from '@/store/auth'
 import { useUiStore } from '@/store/ui'
-import '@/style.css'
+import '@/styles/main.scss'
 
 async function bootstrap() {
   const app = createApp(App)

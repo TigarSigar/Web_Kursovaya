@@ -20,6 +20,9 @@ class RentalController(
     private val rentalService: RentalService
 ) {
 
+    @GetMapping
+    fun getRentals(): List<RentalResponse> = rentalService.findAll()
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     fun createRental(@Valid @RequestBody request: RentalCreateRequest): RentalResponse =
@@ -30,6 +33,9 @@ class RentalController(
 
     @PatchMapping("/{id}/complete")
     fun completeRental(@PathVariable id: Long): RentalResponse = rentalService.complete(id)
+
+    @PatchMapping("/{id}/cancel")
+    fun cancelRental(@PathVariable id: Long): RentalResponse = rentalService.cancel(id)
 
     @GetMapping("/{id}")
     fun getRentalById(@PathVariable id: Long): RentalResponse = rentalService.findById(id)

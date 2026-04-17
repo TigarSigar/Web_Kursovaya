@@ -1,25 +1,29 @@
 package com.cargo.backend.rental.api.dto
 
+import com.cargo.backend.car.api.dto.CarResponse
+import com.cargo.backend.client.api.dto.ClientResponse
+import com.cargo.backend.tariff.api.dto.TariffResponse
 import com.cargo.backend.rental.domain.RentalStatus
 import java.time.Instant
-import java.time.LocalDate
 
 data class RentalResponse(
     val id: Long,
     val carId: Long,
-    val carVin: String,
-    val carPlateNumber: String,
     val clientId: Long,
-    val clientName: String,
     val tariffId: Long,
-    val tariffName: String,
-    val startDate: LocalDate,
-    val endDate: LocalDate,
+    val from: String,
+    val to: String,
+    val pickupLocation: String,
+    val returnLocation: String,
+    val totalDays: Long,
+    val basePrice: java.math.BigDecimal,
+    val dailyPrice: java.math.BigDecimal,
+    val totalPrice: java.math.BigDecimal,
     val status: RentalStatus,
-    val price: PriceBreakdownResponse,
-    val issuedAt: Instant?,
     val actualReturnAt: Instant?,
     val createdAt: Instant?,
-    val updatedAt: Instant?,
-    val history: List<RentalStatusHistoryResponse>
+    val car: CarResponse?,
+    val client: ClientResponse?,
+    val tariff: TariffResponse?,
+    val statusHistory: List<RentalStatusHistoryResponse>
 )

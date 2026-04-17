@@ -1,7 +1,10 @@
 package com.cargo.backend.tariff.domain
 
+import com.cargo.backend.car.domain.CarClass
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
@@ -27,8 +30,27 @@ class Tariff(
     @Column(name = "daily_price", nullable = false, precision = 12, scale = 2)
     var dailyPrice: BigDecimal,
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "car_class", length = 20)
+    var carClass: CarClass? = null,
+
+    @Column(name = "minimum_days")
+    var minimumDays: Int? = null,
+
+    @Column(name = "mileage_limit_km")
+    var mileageLimitKm: Int? = null,
+
+    @Column(name = "deposit_amount", precision = 12, scale = 2)
+    var depositAmount: BigDecimal? = null,
+
+    @Column(name = "insurance_included")
+    var insuranceIncluded: Boolean? = null,
+
     @Column(name = "restrictions", nullable = false, length = 500)
     var restrictions: String,
+
+    @Column(name = "description", length = 2000)
+    var description: String? = null,
 
     @Column(name = "created_at", nullable = false, updatable = false)
     var createdAt: Instant? = null,

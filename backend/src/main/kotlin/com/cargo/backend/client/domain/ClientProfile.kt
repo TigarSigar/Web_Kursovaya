@@ -26,6 +26,15 @@ class ClientProfile(
     @Column(name = "phone", nullable = false, length = 30)
     var phone: String,
 
+    @Column(name = "driver_license_number", length = 40)
+    var driverLicenseNumber: String? = null,
+
+    @Column(name = "driver_license_expiry", length = 20)
+    var driverLicenseExpiry: String? = null,
+
+    @Column(name = "member_since", length = 20)
+    var memberSince: String? = null,
+
     @Column(name = "created_at", nullable = false, updatable = false)
     var createdAt: Instant? = null,
 

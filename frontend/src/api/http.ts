@@ -10,9 +10,9 @@ export class ApiError extends Error {
   }
 }
 
-export const USE_MOCK_API = import.meta.env.VITE_USE_MOCK_API !== 'false'
+export const USE_MOCK_API = import.meta.env.VITE_USE_MOCK_API === 'true'
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? '/api'
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? '/api/v1'
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const response = await fetch(`${API_BASE_URL}${path}`, {
@@ -24,8 +24,21 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   })
 
   if (!response.ok) {
-    const message = await response.text()
-    throw new ApiError(message || 'Ошибка запроса к backend API.', response.status)
+    let message = 'Ошибка запроса к backend API.'
+    let details: unknown
+
+    try {
+      const payload = (await response.json()) as { message?: string; details?: unknown }
+      message = payload.message || message
+      details = payload.details
+    } catch {
+      const rawText = await response.text()
+      if (rawText) {
+        message = rawText
+      }
+    }
+
+    throw new ApiError(message, response.status, details)
   }
 
   if (response.status === 204) {

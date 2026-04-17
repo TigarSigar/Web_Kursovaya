@@ -64,6 +64,8 @@ Deliverable:
 
 Deliverable:
 - Functional domain backend with real API.
+- Frontend local integration now uses backend `/api/v1` for cars, tariffs, maintenance, clients, rentals, and availability search.
+- Demo auth is still frontend-managed until Stage 5, but client profiles and registration now persist in backend.
 
 ## Stage 5 - Security and Access Control
 - [ ] Spring Security + JWT.

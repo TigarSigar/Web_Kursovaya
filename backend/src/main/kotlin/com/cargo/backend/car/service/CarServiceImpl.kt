@@ -8,6 +8,8 @@ import com.cargo.backend.car.domain.CarStatus
 import com.cargo.backend.car.repository.CarRepository
 import com.cargo.backend.common.error.ConflictException
 import com.cargo.backend.common.error.ResourceNotFoundException
+import com.cargo.backend.common.mapping.toFrontendResponse
+import com.cargo.backend.common.mapping.toStoredMultiline
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -18,11 +20,11 @@ class CarServiceImpl(
 
     @Transactional(readOnly = true)
     override fun findAll(): List<CarResponse> =
-        carRepository.findAll().map { it.toResponse() }
+        carRepository.findAll().map { it.toFrontendResponse() }
 
     @Transactional(readOnly = true)
     override fun findById(id: Long): CarResponse =
-        findEntity(id).toResponse()
+        findEntity(id).toFrontendResponse()
 
     @Transactional
     override fun create(request: CarCreateRequest): CarResponse {
@@ -30,10 +32,20 @@ class CarServiceImpl(
         val entity = Car(
             vin = request.vin.trim().uppercase(),
             plateNumber = request.plateNumber.trim().uppercase(),
+            make = request.make.trim(),
+            model = request.model.trim(),
+            year = request.year,
             carClass = request.carClass,
-            status = request.status ?: CarStatus.AVAILABLE
+            status = request.status ?: CarStatus.AVAILABLE,
+            seats = request.seats,
+            transmission = request.transmission,
+            fuelType = request.fuelType,
+            location = request.location.trim(),
+            odometerKm = request.odometerKm,
+            imageUrls = request.imageUrls.toStoredMultiline(),
+            notes = request.notes?.trim()?.ifBlank { null }
         )
-        return carRepository.save(entity).toResponse()
+        return carRepository.save(entity).toFrontendResponse()
     }
 
     @Transactional
@@ -42,9 +54,19 @@ class CarServiceImpl(
         val entity = findEntity(id)
         entity.vin = request.vin.trim().uppercase()
         entity.plateNumber = request.plateNumber.trim().uppercase()
+        entity.make = request.make.trim()
+        entity.model = request.model.trim()
+        entity.year = request.year
         entity.carClass = request.carClass
         entity.status = request.status
-        return carRepository.save(entity).toResponse()
+        entity.seats = request.seats
+        entity.transmission = request.transmission
+        entity.fuelType = request.fuelType
+        entity.location = request.location.trim()
+        entity.odometerKm = request.odometerKm
+        entity.imageUrls = request.imageUrls.toStoredMultiline()
+        entity.notes = request.notes?.trim()?.ifBlank { null }
+        return carRepository.save(entity).toFrontendResponse()
     }
 
     @Transactional
@@ -79,14 +101,4 @@ class CarServiceImpl(
         carRepository.findById(id).orElseThrow {
             ResourceNotFoundException("Car with id '$id' was not found")
         }
-
-    private fun Car.toResponse() = CarResponse(
-        id = id ?: throw IllegalStateException("Car id is null"),
-        vin = vin,
-        plateNumber = plateNumber,
-        carClass = carClass,
-        status = status,
-        createdAt = createdAt,
-        updatedAt = updatedAt
-    )
 }

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import type { CarStatus, MaintenanceStatus, RentalStatus } from '@/types/entities'
 import { humanizeEnum } from '@/utils/format'
 
@@ -12,26 +13,87 @@ const props = withDefaults(
   },
 )
 
-const variants: Record<string, string> = {
-  AVAILABLE: 'bg-success/15 text-success ring-success/25',
-  RENTED: 'bg-warning/15 text-warning ring-warning/25',
-  MAINTENANCE: 'bg-white/10 text-white/75 ring-white/15',
-  INACTIVE: 'bg-white/6 text-white/45 ring-white/10',
-  CREATED: 'bg-primary/15 text-primary ring-primary/25',
-  CONFIRMED: 'bg-sky-500/15 text-sky-300 ring-sky-500/25',
-  ISSUED: 'bg-success/15 text-success ring-success/25',
-  COMPLETED: 'bg-white/10 text-white/70 ring-white/15',
-  CANCELLED: 'bg-danger/15 text-danger ring-danger/25',
-  SCHEDULED: 'bg-primary/15 text-primary ring-primary/25',
-  IN_PROGRESS: 'bg-warning/15 text-warning ring-warning/25',
+const variantMap: Record<string, string> = {
+  AVAILABLE: 'status-badge--success',
+  RENTED: 'status-badge--warning',
+  MAINTENANCE: 'status-badge--muted',
+  INACTIVE: 'status-badge--inactive',
+  CREATED: 'status-badge--primary',
+  CONFIRMED: 'status-badge--info',
+  ISSUED: 'status-badge--success',
+  COMPLETED: 'status-badge--neutral',
+  CANCELLED: 'status-badge--danger',
+  SCHEDULED: 'status-badge--primary',
+  IN_PROGRESS: 'status-badge--warning',
 }
+
+const badgeClass = computed(() => ['status-badge', variantMap[props.status], `status-badge--${props.size}`])
 </script>
 
 <template>
-  <span
-    class="inline-flex items-center rounded-full px-3 py-1 font-medium ring-1 ring-inset"
-    :class="[variants[props.status], props.size === 'sm' ? 'text-xs' : 'text-sm']"
-  >
+  <span :class="badgeClass">
     {{ humanizeEnum(props.status) }}
   </span>
 </template>
+
+<style scoped lang="scss">
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-weight: 600;
+  border: 1px solid transparent;
+
+  &--sm {
+    font-size: 12px;
+  }
+
+  &--md {
+    font-size: 14px;
+  }
+
+  &--success {
+    color: rgb(var(--color-success));
+    background: rgba(var(--color-success), 0.12);
+    border-color: rgba(var(--color-success), 0.24);
+  }
+
+  &--warning {
+    color: rgb(var(--color-warning));
+    background: rgba(var(--color-warning), 0.12);
+    border-color: rgba(var(--color-warning), 0.24);
+  }
+
+  &--danger {
+    color: rgb(var(--color-danger));
+    background: rgba(var(--color-danger), 0.12);
+    border-color: rgba(var(--color-danger), 0.24);
+  }
+
+  &--primary {
+    color: rgb(var(--color-primary));
+    background: rgba(var(--color-primary), 0.12);
+    border-color: rgba(var(--color-primary), 0.24);
+  }
+
+  &--info {
+    color: rgb(56, 189, 248);
+    background: rgba(56, 189, 248, 0.12);
+    border-color: rgba(56, 189, 248, 0.24);
+  }
+
+  &--muted {
+    color: var(--text-soft);
+    background: var(--surface-glass-strong);
+    border-color: var(--border-subtle);
+  }
+
+  &--inactive,
+  &--neutral {
+    color: var(--text-muted);
+    background: var(--surface-glass);
+    border-color: var(--border-subtle);
+  }
+}
+</style>

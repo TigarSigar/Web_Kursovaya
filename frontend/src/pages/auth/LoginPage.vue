@@ -58,21 +58,14 @@ async function login() {
 </script>
 
 <template>
-  <div class="min-h-screen px-4 py-10" :class="uiStore.theme === 'light' ? 'bg-background text-foreground' : 'bg-[#05050d] text-white'">
-    <div class="mx-auto mb-6 flex max-w-6xl justify-end gap-2">
+  <div class="auth-page">
+    <div class="auth-page__toolbar">
       <LanguageSwitcher />
       <ThemeToggle />
     </div>
 
-    <div class="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[1.1fr_0.9fr]">
-      <section
-        class="relative overflow-hidden rounded-[36px] p-8 lg:p-12"
-        :class="
-          uiStore.theme === 'light'
-            ? 'border border-border bg-[radial-gradient(circle_at_top,_rgba(139,92,246,0.12),_transparent_44%)]'
-            : 'border border-white/6 bg-[radial-gradient(circle_at_top,_rgba(139,92,246,0.2),_transparent_44%)]'
-        "
-      >
+    <div class="auth-page__layout">
+      <section class="auth-page__hero">
         <div class="absolute inset-0 bg-[radial-gradient(circle_at_bottom_right,_rgba(139,92,246,0.12),_transparent_32%)]" />
         <div class="relative">
           <div class="flex items-center gap-3">
@@ -85,45 +78,42 @@ async function login() {
           <h1 class="mt-12 max-w-3xl text-5xl font-semibold leading-[1.08] lg:text-6xl">
             {{ t('auth.heroTitle') }}
           </h1>
-          <p class="mt-6 max-w-2xl text-lg leading-8" :class="uiStore.theme === 'light' ? 'text-muted-foreground' : 'text-white/50'">
+          <p class="auth-page__hero-text">
             {{ t('auth.heroSubtitle') }}
           </p>
 
           <div class="mt-12 grid gap-4 md:grid-cols-2">
-            <div class="rounded-3xl p-5" :class="uiStore.theme === 'light' ? 'border border-border bg-white/80' : 'border border-white/8 bg-white/[0.03]'">
+            <div class="auth-page__feature-card">
               <Shield class="h-6 w-6 text-primary" />
               <h2 class="mt-4 text-lg font-semibold">{{ t('auth.availabilityControl') }}</h2>
-              <p class="mt-2 text-sm leading-6" :class="uiStore.theme === 'light' ? 'text-muted-foreground' : 'text-white/45'">{{ t('auth.availabilityDesc') }}</p>
+              <p class="auth-page__feature-text">{{ t('auth.availabilityDesc') }}</p>
             </div>
-            <div class="rounded-3xl p-5" :class="uiStore.theme === 'light' ? 'border border-border bg-white/80' : 'border border-white/8 bg-white/[0.03]'">
+            <div class="auth-page__feature-card">
               <Shield class="h-6 w-6 text-primary" />
               <h2 class="mt-4 text-lg font-semibold">{{ t('auth.operationalWorkflow') }}</h2>
-              <p class="mt-2 text-sm leading-6" :class="uiStore.theme === 'light' ? 'text-muted-foreground' : 'text-white/45'">{{ t('auth.operationalDesc') }}</p>
+              <p class="auth-page__feature-text">{{ t('auth.operationalDesc') }}</p>
             </div>
           </div>
         </div>
       </section>
 
-      <section
-        class="rounded-[36px] p-8 shadow-[0_24px_80px_rgba(0,0,0,0.45)]"
-        :class="uiStore.theme === 'light' ? 'border border-border bg-white/88' : 'border border-white/8 bg-[#0b0b15]'"
-      >
+      <section class="auth-page__panel">
         <p class="text-sm font-semibold uppercase tracking-[0.28em] text-primary">{{ t('auth.signIn') }}</p>
         <h2 class="mt-4 text-3xl font-semibold">{{ t('auth.accessAccount') }}</h2>
-        <p class="mt-3 text-sm leading-6" :class="uiStore.theme === 'light' ? 'text-muted-foreground' : 'text-white/45'">{{ t('auth.chooseWorkspace') }}</p>
+        <p class="auth-page__panel-text">{{ t('auth.chooseWorkspace') }}</p>
 
-        <div class="mt-8 flex rounded-2xl p-1" :class="uiStore.theme === 'light' ? 'bg-slate-100' : 'bg-white/[0.04]'">
+        <div class="auth-page__role-tabs">
           <button
-            class="flex-1 rounded-xl px-4 py-3 text-sm font-semibold transition"
-            :class="form.role === 'CLIENT' ? 'bg-primary text-white shadow-[0_0_20px_rgba(139,92,246,0.25)]' : uiStore.theme === 'light' ? 'text-slate-500' : 'text-white/55'"
+            class="auth-page__role-button"
+            :class="{ 'auth-page__role-button--active': form.role === 'CLIENT' }"
             type="button"
             @click="form.role = 'CLIENT'; form.email = 'client@carrent.local'"
           >
             {{ t('auth.clientPortal') }}
           </button>
           <button
-            class="flex-1 rounded-xl px-4 py-3 text-sm font-semibold transition"
-            :class="form.role === 'FLEET_MANAGER' ? 'bg-primary text-white shadow-[0_0_20px_rgba(139,92,246,0.25)]' : uiStore.theme === 'light' ? 'text-slate-500' : 'text-white/55'"
+            class="auth-page__role-button"
+            :class="{ 'auth-page__role-button--active': form.role === 'FLEET_MANAGER' }"
             type="button"
             @click="form.role = 'FLEET_MANAGER'; form.email = 'manager@carrent.local'"
           >
@@ -133,32 +123,31 @@ async function login() {
 
         <form class="mt-8 space-y-5" @submit.prevent="login">
           <label class="field-group">
-            <span class="field-label" :class="uiStore.theme === 'light' ? '!text-foreground' : '!text-white/85'">{{ t('auth.email') }}</span>
-            <input v-model="form.email" class="input-base" :class="uiStore.theme === 'light' ? '!border-border !bg-white !text-foreground' : '!border-white/8 !bg-white/[0.03] !text-white'" type="email" />
+            <span class="field-label">{{ t('auth.email') }}</span>
+            <input v-model="form.email" class="input-base" type="email" />
           </label>
 
           <label class="field-group">
-            <span class="field-label" :class="uiStore.theme === 'light' ? '!text-foreground' : '!text-white/85'">{{ t('auth.password') }}</span>
+            <span class="field-label">{{ t('auth.password') }}</span>
             <div class="relative">
               <input
                 v-model="form.password"
                 class="input-base !pr-12"
-                :class="uiStore.theme === 'light' ? '!border-border !bg-white !text-foreground' : '!border-white/8 !bg-white/[0.03] !text-white'"
                 :type="showPassword.value ? 'text' : 'password'"
               />
-              <button class="absolute right-4 top-1/2 -translate-y-1/2" :class="uiStore.theme === 'light' ? 'text-slate-500' : 'text-white/45'" type="button" @click="showPassword.value = !showPassword.value">
+              <button class="auth-page__password-toggle" type="button" @click="showPassword.value = !showPassword.value">
                 <Eye v-if="!showPassword.value" class="h-5 w-5" />
                 <EyeOff v-else class="h-5 w-5" />
               </button>
             </div>
           </label>
 
-          <button class="flex w-full items-center justify-center rounded-2xl bg-gradient-to-r from-primary to-[#8b5cf6] px-6 py-4 text-lg font-semibold text-white shadow-[0_0_30px_rgba(139,92,246,0.28)]" type="submit">
+          <button class="btn-primary flex w-full items-center justify-center !px-6 !py-4 text-lg font-semibold" type="submit">
             {{ t('auth.continue') }}
           </button>
         </form>
 
-        <div class="mt-6 text-center text-sm" :class="uiStore.theme === 'light' ? 'text-muted-foreground' : 'text-white/45'">
+        <div class="auth-page__footer">
           {{ t('auth.noAccount') }}
           <RouterLink class="ml-2 font-semibold text-primary hover:text-white" to="/register">{{ t('auth.goRegister') }}</RouterLink>
         </div>
@@ -166,3 +155,122 @@ async function login() {
     </div>
   </div>
 </template>
+
+<style scoped lang="scss">
+.auth-page {
+  min-height: 100vh;
+  padding: 40px 16px;
+  background: rgb(var(--color-background));
+  color: rgb(var(--color-foreground));
+
+  &__toolbar,
+  &__layout {
+    max-width: 72rem;
+    margin: 0 auto;
+  }
+
+  &__toolbar {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-bottom: 24px;
+  }
+
+  &__layout {
+    display: grid;
+    gap: 32px;
+  }
+
+  &__hero,
+  &__panel {
+    position: relative;
+    overflow: hidden;
+    padding: 32px;
+    border: 1px solid var(--border-subtle);
+    border-radius: 36px;
+  }
+
+  &__hero {
+    background:
+      radial-gradient(circle at top, rgba(139, 92, 246, 0.16), transparent 44%),
+      var(--surface-panel);
+  }
+
+  &__panel {
+    background: var(--surface-glass-strong);
+    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.3);
+  }
+
+  &__hero-text,
+  &__panel-text,
+  &__feature-text,
+  &__footer {
+    margin-top: 12px;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text-muted);
+  }
+
+  &__hero-text {
+    margin-top: 24px;
+    max-width: 42rem;
+    font-size: 18px;
+    line-height: 1.8;
+  }
+
+  &__feature-card {
+    padding: 20px;
+    border: 1px solid var(--border-subtle);
+    border-radius: 24px;
+    background: var(--surface-glass);
+  }
+
+  &__role-tabs {
+    display: flex;
+    padding: 4px;
+    margin-top: 32px;
+    border-radius: 16px;
+    background: var(--surface-glass);
+  }
+
+  &__role-button {
+    flex: 1;
+    padding: 12px 16px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-muted);
+    transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+
+    &--active {
+      color: white;
+      background: rgb(var(--color-primary));
+      box-shadow: 0 0 20px rgba(139, 92, 246, 0.25);
+    }
+  }
+
+  &__password-toggle {
+    position: absolute;
+    top: 50%;
+    right: 16px;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+  }
+
+  &__footer {
+    margin-top: 24px;
+    text-align: center;
+  }
+}
+
+@media (min-width: 1024px) {
+  .auth-page__layout {
+    grid-template-columns: 1.1fr 0.9fr;
+  }
+
+  .auth-page__hero,
+  .auth-page__panel {
+    padding: 48px;
+  }
+}
+</style>

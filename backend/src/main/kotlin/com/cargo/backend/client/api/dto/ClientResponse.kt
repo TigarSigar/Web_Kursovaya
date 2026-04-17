@@ -4,9 +4,13 @@ import java.time.Instant
 
 data class ClientResponse(
     val id: Long,
-    val fullName: String,
+    val firstName: String,
+    val lastName: String,
     val email: String,
     val phone: String,
+    val driverLicenseNumber: String,
+    val driverLicenseExpiry: String,
+    val memberSince: String,
     val createdAt: Instant?,
     val updatedAt: Instant?
 )

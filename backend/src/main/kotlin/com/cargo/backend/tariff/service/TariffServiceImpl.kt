@@ -2,6 +2,8 @@ package com.cargo.backend.tariff.service
 
 import com.cargo.backend.common.error.ConflictException
 import com.cargo.backend.common.error.ResourceNotFoundException
+import com.cargo.backend.common.mapping.toFrontendResponse
+import com.cargo.backend.common.mapping.toStoredMultiline
 import com.cargo.backend.tariff.api.dto.TariffCreateRequest
 import com.cargo.backend.tariff.api.dto.TariffResponse
 import com.cargo.backend.tariff.api.dto.TariffUpdateRequest
@@ -17,11 +19,11 @@ class TariffServiceImpl(
 
     @Transactional(readOnly = true)
     override fun findAll(): List<TariffResponse> =
-        tariffRepository.findAll().map { it.toResponse() }
+        tariffRepository.findAll().map { it.toFrontendResponse() }
 
     @Transactional(readOnly = true)
     override fun findById(id: Long): TariffResponse =
-        findEntity(id).toResponse()
+        findEntity(id).toFrontendResponse()
 
     @Transactional
     override fun create(request: TariffCreateRequest): TariffResponse {
@@ -31,11 +33,17 @@ class TariffServiceImpl(
         }
         val entity = Tariff(
             name = normalizedName,
+            carClass = request.carClass,
             basePrice = request.basePrice,
             dailyPrice = request.dailyPrice,
-            restrictions = request.restrictions.trim()
+            minimumDays = request.minimumDays,
+            mileageLimitKm = request.mileageLimitKm,
+            depositAmount = request.depositAmount,
+            insuranceIncluded = request.insuranceIncluded,
+            restrictions = request.restrictions.toStoredMultiline(),
+            description = request.description.trim()
         )
-        return tariffRepository.save(entity).toResponse()
+        return tariffRepository.save(entity).toFrontendResponse()
     }
 
     @Transactional
@@ -47,10 +55,16 @@ class TariffServiceImpl(
 
         val entity = findEntity(id)
         entity.name = normalizedName
+        entity.carClass = request.carClass
         entity.basePrice = request.basePrice
         entity.dailyPrice = request.dailyPrice
-        entity.restrictions = request.restrictions.trim()
-        return tariffRepository.save(entity).toResponse()
+        entity.minimumDays = request.minimumDays
+        entity.mileageLimitKm = request.mileageLimitKm
+        entity.depositAmount = request.depositAmount
+        entity.insuranceIncluded = request.insuranceIncluded
+        entity.restrictions = request.restrictions.toStoredMultiline()
+        entity.description = request.description.trim()
+        return tariffRepository.save(entity).toFrontendResponse()
     }
 
     @Transactional
@@ -62,14 +76,4 @@ class TariffServiceImpl(
         tariffRepository.findById(id).orElseThrow {
             ResourceNotFoundException("Tariff with id '$id' was not found")
         }
-
-    private fun Tariff.toResponse() = TariffResponse(
-        id = id ?: throw IllegalStateException("Tariff id is null"),
-        name = name,
-        basePrice = basePrice,
-        dailyPrice = dailyPrice,
-        restrictions = restrictions,
-        createdAt = createdAt,
-        updatedAt = updatedAt
-    )
 }

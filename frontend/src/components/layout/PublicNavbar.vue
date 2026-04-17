@@ -80,7 +80,7 @@ const bookNowLink = computed(() => '/cars')
         </template>
 
         <RouterLink
-          class="inline-flex items-center rounded-2xl bg-gradient-to-r from-primary to-[#8b5cf6] px-6 py-4 text-lg font-semibold text-white shadow-[0_0_28px_rgba(139,92,246,0.35)] transition hover:scale-[1.02]"
+          class="btn-primary !px-6 !py-4 text-lg font-semibold"
           :to="bookNowLink"
         >
           {{ t('nav.bookNow') }}

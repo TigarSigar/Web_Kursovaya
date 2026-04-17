@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+import { buildClientAccountId } from '@/api/backend'
 import { authApi } from '@/api/auth'
 import { clientsApi } from '@/api/clients'
 import type { ClientProfile, UserAccount, UserRole } from '@/types/entities'
@@ -24,9 +25,12 @@ export const useAuthStore = defineStore('auth', {
     userRole: (state): UserRole | null => state.currentAccount?.role ?? null,
   },
   actions: {
+    async loadDemoAccounts() {
+      this.demoAccounts = await authApi.listDemoAccounts()
+    },
     async init() {
       if (this.demoAccounts.length === 0) {
-        this.demoAccounts = await authApi.listDemoAccounts()
+        await this.loadDemoAccounts()
       }
 
       const savedId = window.localStorage.getItem(STORAGE_KEY)
@@ -49,7 +53,7 @@ export const useAuthStore = defineStore('auth', {
       this.loading = true
       try {
         if (this.demoAccounts.length === 0) {
-          this.demoAccounts = await authApi.listDemoAccounts()
+          await this.loadDemoAccounts()
         }
 
         const account = this.demoAccounts.find((item) => item.id === accountId)
@@ -60,6 +64,20 @@ export const useAuthStore = defineStore('auth', {
         this.currentAccount = account
         this.currentClientProfile = account.clientProfileId ? await clientsApi.getProfile(account.clientProfileId) : null
         window.localStorage.setItem(STORAGE_KEY, account.id)
+      } finally {
+        this.loading = false
+      }
+    },
+    async registerClient(payload: { fullName: string; email: string; phone: string }) {
+      this.loading = true
+      try {
+        const profile = await clientsApi.create(payload)
+        if (!profile) {
+          throw new Error('Не удалось создать клиента.')
+        }
+
+        await this.loadDemoAccounts()
+        await this.login(buildClientAccountId(profile.id))
       } finally {
         this.loading = false
       }

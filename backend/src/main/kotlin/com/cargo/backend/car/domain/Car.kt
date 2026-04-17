@@ -25,6 +25,15 @@ class Car(
     @Column(name = "plate_number", nullable = false, unique = true, length = 20)
     var plateNumber: String,
 
+    @Column(name = "make", length = 80)
+    var make: String? = null,
+
+    @Column(name = "model", length = 80)
+    var model: String? = null,
+
+    @Column(name = "year_of_manufacture")
+    var year: Int? = null,
+
     @Enumerated(EnumType.STRING)
     @Column(name = "car_class", nullable = false, length = 20)
     var carClass: CarClass,
@@ -32,6 +41,29 @@ class Car(
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, length = 20)
     var status: CarStatus = CarStatus.AVAILABLE,
+
+    @Column(name = "seats_count")
+    var seats: Int? = null,
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "transmission", length = 20)
+    var transmission: TransmissionType? = null,
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "fuel_type", length = 20)
+    var fuelType: FuelType? = null,
+
+    @Column(name = "location_name", length = 150)
+    var location: String? = null,
+
+    @Column(name = "odometer_km")
+    var odometerKm: Int? = null,
+
+    @Column(name = "image_urls", columnDefinition = "TEXT")
+    var imageUrls: String? = null,
+
+    @Column(name = "notes", length = 2000)
+    var notes: String? = null,
 
     @Column(name = "created_at", nullable = false, updatable = false)
     var createdAt: Instant? = null,

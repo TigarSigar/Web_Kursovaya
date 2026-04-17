@@ -15,10 +15,30 @@ interface UiState {
 }
 
 const THEME_STORAGE_KEY = 'cargo-theme'
+const THEME_TRANSITION_CLASS = 'theme-transitioning'
+
+let themeTransitionTimer: number | undefined
 
 function syncTheme(theme: AppTheme) {
   document.documentElement.dataset.theme = theme
   document.documentElement.style.colorScheme = theme
+}
+
+function beginThemeTransition() {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    return
+  }
+
+  document.documentElement.classList.add(THEME_TRANSITION_CLASS)
+
+  if (themeTransitionTimer) {
+    window.clearTimeout(themeTransitionTimer)
+  }
+
+  themeTransitionTimer = window.setTimeout(() => {
+    document.documentElement.classList.remove(THEME_TRANSITION_CLASS)
+    themeTransitionTimer = undefined
+  }, 260)
 }
 
 export const useUiStore = defineStore('ui', {
@@ -38,6 +58,7 @@ export const useUiStore = defineStore('ui', {
       syncTheme(this.theme)
     },
     setTheme(theme: AppTheme) {
+      beginThemeTransition()
       this.theme = theme
       window.localStorage.setItem(THEME_STORAGE_KEY, theme)
       syncTheme(theme)

@@ -7,6 +7,7 @@ import { useI18n } from '@/i18n'
 import { useCarsStore } from '@/store/cars'
 import { useUiStore } from '@/store/ui'
 import type { CarFormModel } from '@/types/entities'
+import { isValidRussianPlateNumber, normalizePlateNumberInput } from '@/utils/car-form'
 
 const route = useRoute()
 const router = useRouter()
@@ -23,12 +24,20 @@ const copy = computed(() =>
         subtitle: 'Форма отделена от API-логики и используется как переиспользуемый section-компонент.',
         saved: isEdit.value ? 'Автомобиль обновлён' : 'Автомобиль создан',
         failed: 'Не удалось сохранить автомобиль',
+        invalidPlate: 'Госномер должен быть в формате: буква, три цифры, две буквы, регион. Например: А123ВС154.',
+        invalidLocation: 'Нужно выбрать одну из существующих локаций.',
+        missingImage: 'Загрузите хотя бы одно изображение автомобиля файлом с компьютера.',
+        invalidImage: 'SVG и ссылки больше не используются. Загрузите JPG, PNG или WEBP файлом.',
       }
     : {
         title: isEdit.value ? 'Edit vehicle' : 'Add vehicle',
         subtitle: 'The form is separated from API logic and reused as a dedicated section component.',
         saved: isEdit.value ? 'Vehicle updated' : 'Vehicle created',
         failed: 'Unable to save vehicle',
+        invalidPlate: 'Plate number must match the required format. Example: A123BC154.',
+        invalidLocation: 'Choose one of the existing locations.',
+        missingImage: 'Upload at least one car image file from your computer.',
+        invalidImage: 'SVG and URL-based placeholders are no longer allowed. Upload a JPG, PNG, or WEBP file.',
       },
 )
 
@@ -45,9 +54,21 @@ const form = ref<CarFormModel>({
   fuelType: 'PETROL',
   location: '',
   odometerKm: 0,
-  imageUrl: '/car-placeholder.svg',
+  imageUrls: [],
   notes: '',
 })
+
+const availableMakes = computed(() => [...new Set(carsStore.items.map((car) => car.make).filter(Boolean))].sort((left, right) => left.localeCompare(right)))
+const availableModels = computed(() => {
+  const normalizedMake = form.value.make.trim().toLowerCase()
+  const models = carsStore.items
+    .filter((car) => !normalizedMake || car.make.trim().toLowerCase() === normalizedMake)
+    .map((car) => car.model)
+    .filter(Boolean)
+
+  return [...new Set(models)].sort((left, right) => left.localeCompare(right))
+})
+const availableLocations = computed(() => [...new Set(carsStore.items.map((car) => car.location).filter(Boolean))].sort((left, right) => left.localeCompare(right)))
 
 onMounted(async () => {
   await carsStore.fetchAll()
@@ -66,13 +87,35 @@ onMounted(async () => {
       fuelType: current.fuelType,
       location: current.location,
       odometerKm: current.odometerKm,
-      imageUrl: current.imageUrl ?? '/car-placeholder.svg',
+      imageUrls: (current.imageUrls ?? []).filter((url) => Boolean(url) && !url.endsWith('.svg')),
       notes: current.notes ?? '',
     }
   }
 })
 
 async function submit() {
+  form.value.plateNumber = normalizePlateNumberInput(form.value.plateNumber)
+
+  if (!isValidRussianPlateNumber(form.value.plateNumber)) {
+    uiStore.pushToast({ type: 'error', title: copy.value.failed, message: copy.value.invalidPlate })
+    return
+  }
+
+  if (!availableLocations.value.includes(form.value.location)) {
+    uiStore.pushToast({ type: 'error', title: copy.value.failed, message: copy.value.invalidLocation })
+    return
+  }
+
+  if (!form.value.imageUrls.length) {
+    uiStore.pushToast({ type: 'error', title: copy.value.failed, message: copy.value.missingImage })
+    return
+  }
+
+  if (form.value.imageUrls.some((url) => url.endsWith('.svg') || url.startsWith('data:image/svg+xml'))) {
+    uiStore.pushToast({ type: 'error', title: copy.value.failed, message: copy.value.invalidImage })
+    return
+  }
+
   try {
     await carsStore.save(carId.value || null, form.value)
     uiStore.pushToast({ type: 'success', title: copy.value.saved })
@@ -100,7 +143,7 @@ async function submit() {
     <ErrorState v-if="carsStore.error" :message="carsStore.error" @retry="carsStore.fetchAll" />
 
     <div v-else class="card-base p-6">
-      <CarFormSection v-model="form" />
+      <CarFormSection v-model="form" :makes="availableMakes" :models="availableModels" :locations="availableLocations" />
       <div class="mt-6 flex gap-3">
         <button class="btn-secondary" type="button" @click="router.push('/manager/cars')">{{ locale === 'ru' ? 'Назад' : 'Back' }}</button>
         <button class="btn-primary" type="button" @click="submit">{{ locale === 'ru' ? 'Сохранить' : 'Save' }}</button>

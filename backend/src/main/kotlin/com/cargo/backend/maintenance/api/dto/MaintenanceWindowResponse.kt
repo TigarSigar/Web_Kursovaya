@@ -1,16 +1,20 @@
 package com.cargo.backend.maintenance.api.dto
 
+import com.cargo.backend.car.api.dto.CarResponse
+import com.cargo.backend.maintenance.domain.MaintenanceStatus
+import java.math.BigDecimal
 import java.time.Instant
-import java.time.LocalDate
 
 data class MaintenanceWindowResponse(
     val id: Long,
     val carId: Long,
-    val carVin: String,
-    val carPlateNumber: String,
-    val startDate: LocalDate,
-    val endDate: LocalDate,
-    val description: String,
+    val from: String,
+    val to: String,
+    val serviceType: String,
+    val comment: String,
+    val status: MaintenanceStatus,
+    val estimatedCost: BigDecimal?,
+    val car: CarResponse?,
     val createdAt: Instant?,
     val updatedAt: Instant?
 )

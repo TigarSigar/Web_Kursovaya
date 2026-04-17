@@ -7,6 +7,7 @@ import com.cargo.backend.client.domain.ClientProfile
 import com.cargo.backend.client.repository.ClientProfileRepository
 import com.cargo.backend.common.error.ConflictException
 import com.cargo.backend.common.error.ResourceNotFoundException
+import com.cargo.backend.common.mapping.toFrontendResponse
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -17,11 +18,11 @@ class ClientProfileServiceImpl(
 
     @Transactional(readOnly = true)
     override fun findAll(): List<ClientResponse> =
-        clientProfileRepository.findAll().map { it.toResponse() }
+        clientProfileRepository.findAll().map { it.toFrontendResponse() }
 
     @Transactional(readOnly = true)
     override fun findById(id: Long): ClientResponse =
-        findEntity(id).toResponse()
+        findEntity(id).toFrontendResponse()
 
     @Transactional
     override fun create(request: ClientCreateRequest): ClientResponse {
@@ -33,9 +34,12 @@ class ClientProfileServiceImpl(
         val entity = ClientProfile(
             fullName = request.fullName.trim(),
             email = normalizedEmail,
-            phone = request.phone.trim()
+            phone = request.phone.trim(),
+            driverLicenseNumber = request.driverLicenseNumber?.trim()?.ifBlank { null },
+            driverLicenseExpiry = request.driverLicenseExpiry?.trim()?.ifBlank { null },
+            memberSince = java.time.LocalDate.now().toString()
         )
-        return clientProfileRepository.save(entity).toResponse()
+        return clientProfileRepository.save(entity).toFrontendResponse()
     }
 
     @Transactional
@@ -49,7 +53,9 @@ class ClientProfileServiceImpl(
         entity.fullName = request.fullName.trim()
         entity.email = normalizedEmail
         entity.phone = request.phone.trim()
-        return clientProfileRepository.save(entity).toResponse()
+        entity.driverLicenseNumber = request.driverLicenseNumber?.trim()?.ifBlank { null }
+        entity.driverLicenseExpiry = request.driverLicenseExpiry?.trim()?.ifBlank { null }
+        return clientProfileRepository.save(entity).toFrontendResponse()
     }
 
     @Transactional
@@ -61,13 +67,4 @@ class ClientProfileServiceImpl(
         clientProfileRepository.findById(id).orElseThrow {
             ResourceNotFoundException("Client with id '$id' was not found")
         }
-
-    private fun ClientProfile.toResponse() = ClientResponse(
-        id = id ?: throw IllegalStateException("Client id is null"),
-        fullName = fullName,
-        email = email,
-        phone = phone,
-        createdAt = createdAt,
-        updatedAt = updatedAt
-    )
 }

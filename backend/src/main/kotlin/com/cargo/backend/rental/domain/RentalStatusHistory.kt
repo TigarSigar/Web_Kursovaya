@@ -1,5 +1,6 @@
 package com.cargo.backend.rental.domain
 
+import com.cargo.backend.common.domain.UserRole
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
@@ -30,6 +31,10 @@ class RentalStatusHistory(
 
     @Column(name = "changed_at", nullable = false)
     val changedAt: Instant,
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "actor_role", length = 20)
+    val actorRole: UserRole? = null,
 
     @Column(name = "note", nullable = false, length = 300)
     val note: String

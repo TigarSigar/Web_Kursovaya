@@ -1,6 +1,7 @@
 package com.cargo.backend.rental.api.dto
 
 import jakarta.validation.constraints.NotNull
+import jakarta.validation.constraints.Size
 import java.time.LocalDate
 
 data class RentalCreateRequest(
@@ -17,5 +18,11 @@ data class RentalCreateRequest(
     val startDate: LocalDate,
 
     @field:NotNull(message = "End date is required")
-    val endDate: LocalDate
+    val endDate: LocalDate,
+
+    @field:Size(max = 150, message = "Pickup location must be at most 150 characters")
+    val pickupLocation: String? = null,
+
+    @field:Size(max = 150, message = "Return location must be at most 150 characters")
+    val returnLocation: String? = null
 )

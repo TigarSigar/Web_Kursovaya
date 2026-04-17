@@ -45,6 +45,21 @@ class RentalOrder(
     @Column(name = "end_date", nullable = false)
     val endDate: LocalDate,
 
+    @Column(name = "pickup_location", length = 150)
+    var pickupLocation: String? = null,
+
+    @Column(name = "return_location", length = 150)
+    var returnLocation: String? = null,
+
+    @Column(name = "total_days")
+    var totalDays: Long? = null,
+
+    @Column(name = "base_price", precision = 12, scale = 2)
+    var basePrice: BigDecimal? = null,
+
+    @Column(name = "daily_price", precision = 12, scale = 2)
+    var dailyPrice: BigDecimal? = null,
+
     @Column(name = "total_price", nullable = false, precision = 12, scale = 2)
     val totalPrice: BigDecimal,
 
