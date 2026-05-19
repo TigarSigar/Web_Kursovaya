@@ -1,0 +1,25 @@
+@use './tokens/colors' as tokens-colors;
+@use './tokens/typography' as tokens-typography;
+@use './tokens/spacing' as tokens-spacing;
+@use './tokens/radius' as tokens-radius;
+@use './tokens/shadows' as tokens-shadows;
+@use './tokens/breakpoints' as tokens-breakpoints;
+@use './tokens/layout' as tokens-layout;
+@use './tokens/z-index' as tokens-z-index;
+@use './tokens/transitions' as tokens-transitions;
+
+@use './themes/dark' as themes-dark;
+@use './themes/light' as themes-light;
+
+@use './base/reset' as base-reset;
+@use './base/typography' as base-typography;
+@use './base/base' as base-base;
+
+@use './components/primitives' as components-primitives;
+@use './components/auth-page' as components-auth-page;
+@use './utilities/layout' as utilities-layout;
+@use './utilities/states' as utilities-states;
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

@@ -1,0 +1,40 @@
+:root[data-theme='light'] {
+  --color-bg: 244 247 255;
+  --color-surface-base: 255 255 255;
+  --color-surface-muted: 241 246 255;
+  --color-surface-raised: 249 252 255;
+  --color-text-primary: 18 26 44;
+  --color-text-secondary: 78 92 124;
+  --color-text-muted: 101 117 149;
+  --color-border-default: 176 189 218;
+  --color-border-strong: 146 162 196;
+  --color-input-background: 255 255 255;
+  --color-sidebar-background: 249 252 255;
+  --color-sidebar-border: 182 193 220;
+  --color-sidebar-text-muted: 87 100 131;
+  --color-overlay: 17 24 39;
+  --color-shadow: 69 89 124;
+
+  --surface-glass: rgb(var(--color-surface-base) / 0.9);
+  --surface-glass-strong: rgb(var(--color-surface-raised) / 0.97);
+  --surface-glass-hover: rgb(var(--color-surface-muted) / 1);
+  --surface-panel: linear-gradient(
+    180deg,
+    rgb(var(--color-surface-raised) / 1),
+    rgb(var(--color-surface-muted) / 0.96)
+  );
+  --surface-hero: linear-gradient(140deg, rgb(var(--color-accent) / 0.1), rgb(var(--color-surface-base) / 0.98));
+  --surface-section: linear-gradient(
+    180deg,
+    rgb(var(--color-surface-base) / 0.88),
+    rgb(var(--color-surface-muted) / 0.96)
+  );
+  --surface-section-alt: linear-gradient(180deg, rgb(var(--color-surface-muted) / 0.9), rgb(var(--color-bg) / 0.97));
+  --surface-toast: rgb(var(--color-surface-base) / 0.98);
+
+  --border-subtle: rgb(var(--color-border-default) / 0.72);
+  --border-strong: rgb(var(--color-border-strong) / 0.9);
+  --text-soft: rgb(var(--color-text-secondary) / 0.98);
+  --text-muted: rgb(var(--color-text-secondary) / 0.9);
+  --text-faint: rgb(var(--color-text-muted) / 0.95);
+}

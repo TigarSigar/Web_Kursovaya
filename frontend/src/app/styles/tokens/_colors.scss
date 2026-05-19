@@ -1,0 +1,56 @@
+:root {
+  --palette-accent-500: 139 92 246;
+  --palette-success-500: 74 222 128;
+  --palette-warning-500: 245 158 11;
+  --palette-error-500: 248 113 113;
+  --palette-info-500: 56 189 248;
+
+  --color-accent: var(--palette-accent-500);
+  --color-accent-contrast: 255 255 255;
+  --color-success: var(--palette-success-500);
+  --color-warning: var(--palette-warning-500);
+  --color-error: var(--palette-error-500);
+  --color-info: var(--palette-info-500);
+
+  /* Compatibility aliases for existing Tailwind utilities and components */
+  --color-background: var(--color-bg);
+  --color-surface: var(--color-surface-base);
+  --color-surface-strong: var(--color-surface-raised);
+  --color-foreground: var(--color-text-primary);
+  --color-muted: var(--color-surface-muted);
+  --color-muted-foreground: var(--color-text-secondary);
+  --color-primary: var(--color-accent);
+  --color-primary-foreground: var(--color-accent-contrast);
+  --color-danger: var(--color-error);
+  --color-border: var(--color-border-default);
+  --color-input: var(--color-input-background);
+  --color-sidebar: var(--color-sidebar-background);
+  --color-sidebar-border: var(--color-sidebar-border);
+  --color-sidebar-muted: var(--color-sidebar-text-muted);
+
+  --surface-glass: rgb(var(--color-surface-base) / 0.58);
+  --surface-glass-strong: rgb(var(--color-surface-raised) / 0.8);
+  --surface-glass-hover: rgb(var(--color-surface-raised) / 0.92);
+  --surface-panel: linear-gradient(
+    180deg,
+    rgb(var(--color-surface-raised) / 0.82),
+    rgb(var(--color-surface-base) / 0.76)
+  );
+  --surface-hero: linear-gradient(140deg, rgb(var(--color-accent) / 0.15), rgb(var(--color-surface-base) / 0.96));
+  --surface-section: linear-gradient(
+    180deg,
+    rgb(var(--color-surface-raised) / 0.64),
+    rgb(var(--color-surface-base) / 0.86)
+  );
+  --surface-section-alt: linear-gradient(180deg, rgb(var(--color-surface-base) / 0.72), rgb(var(--color-bg) / 0.94));
+  --surface-toast: rgb(var(--color-surface-raised) / 0.95);
+
+  --border-subtle: rgb(var(--color-border-default) / 0.56);
+  --border-strong: rgb(var(--color-border-strong) / 0.78);
+
+  --text-soft: rgb(var(--color-text-secondary) / 0.93);
+  --text-muted: rgb(var(--color-text-secondary) / 0.82);
+  --text-faint: rgb(var(--color-text-muted) / 0.9);
+
+  --focus-ring: rgb(var(--color-accent) / 0.24);
+}

@@ -1,0 +1,6 @@
+:root {
+  --shadow-card: 0 0 0 1px rgb(var(--color-border-default) / 0.2), 0 22px 42px rgb(var(--color-shadow) / 0.34);
+  --shadow-panel: 0 0 0 1px rgb(var(--color-border-default) / 0.24), 0 28px 64px rgb(var(--color-shadow) / 0.48);
+  --shadow-focus: 0 0 0 3px var(--focus-ring);
+  --shadow-glow: 0 0 24px rgb(var(--color-accent) / 0.28);
+}

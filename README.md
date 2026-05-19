@@ -1,65 +1,92 @@
-# Задание для курсовой работы по дисциплине "Современные средства и методы веб-разработки"
+# CarGO — Car Rental System
 
----
-### 5. Сервис аренды автомобилей
+CarGO is a coursework-style web system for car rental with two role-based areas:
+- `CLIENT`: search, booking, rental tracking
+- `FLEET_MANAGER`: fleet, tariffs, maintenance, rental processing
 
-**Авторы**: Сергиенко Александр Сергеевич, Кононенко Егор Сергеевич
+## Stack
 
-**Основные бизнес-процессы:**
-управление автопарком и оформлением аренды по периодам.
+- Frontend: Vue 3, TypeScript, Pinia, Vue Router, Vite
+- Backend: Kotlin, Spring Boot, Spring Data JPA, Validation, PostgreSQL, SpringDoc OpenAPI
 
-**Роли и права:**
-1. `FLEET_MANAGER` управляет автомобилями, тарифами и окнами обслуживания.
-2. `CLIENT` ищет доступные авто и создает аренду.
+## Repository Structure
 
-**Обязательные сущности:**
-1. `Car` (VIN, номер, класс, статус).
-2. `Tariff` (базовая цена, цена за сутки, ограничения).
-3. `ClientProfile`
-4. `RentalOrder` (период, авто, клиент, цена, статус).
-5. `MaintenanceWindow`
-6. `RentalStatusHistory`
+- `frontend/` — SPA application
+- `backend/` — REST API
+- `docker-compose.yml` — container entrypoint (currently frontend service)
+- `stages.md` — implementation roadmap
 
-**Ключевые бизнес-правила:**
-1. Для одного авто запрещены пересекающиеся периоды аренды.
-2. Авто в окне обслуживания недоступно для бронирования.
-3. Стоимость аренды рассчитывается по тарифу и длительности.
-4. Завершенная аренда фиксирует фактическое время возврата.
-5. Отмена аренды запрещена после фактической выдачи авто.
+## Prerequisites
 
-**Обязательные пользовательские сценарии (MVP):**
-1. Менеджер добавляет авто, тариф и окно обслуживания.
-2. Клиент ищет доступные авто на заданные даты.
-3. Клиент оформляет аренду.
-4. Менеджер переводит аренду в статусы `ISSUED` и `COMPLETED`.
+- Node.js 20+
+- npm 10+
+- JDK 21
+- PostgreSQL 14+
 
-**Минимальный API-контур:**
-1. CRUD для `Car`, `Tariff`, `MaintenanceWindow`.
-2. `GET /cars/available?from=&to=`.
-3. `POST /rentals`.
-4. `PATCH /rentals/{id}/issue`.
-5. `PATCH /rentals/{id}/complete`.
-6. `GET /clients/{id}/rentals`.
+## Environment Variables
 
-**Критерии приемки:**
-1. Невозможна аренда недоступного автомобиля.
-2. Цена заказа воспроизводима и объяснима по данным тарифа.
-3. История статусов аренды доступна через API.
+### Frontend (`frontend/.env`, optional)
 
+| Variable | Default | Description |
+| --- | --- | --- |
+| `VITE_USE_MOCK_API` | `false` | Use mock data instead of backend API |
+| `VITE_API_BASE_URL` | `/api/v1` | Backend API base path |
 
-**Таблица распределения ответственности для сервиса аренды автомобилей**
+### Backend (`backend`, optional)
 
-| Область                                                                                                                       | Сергиенко Александр | Кононенко Егор |
-|-------------------------------------------------------------------------------------------------------------------------------|---------------------|----------------|
-| **Shared foundation** (структура проекта, Dockerfile, docker-compose, CI/CD, подключение PostgreSQL + Redis, Spring Actuator) | совместно           | совместно      |
-| **Аутентификация и управление пользователями** (JWT, роли CLIENT и FLEET_MANAGER, регистрация, логин)                         | ✔                   |                |
-| **Профиль клиента (ClientProfile)**                                                                                           | ✔                   |                |
-| **Управление автомобилями (Car):** CRUD, статусы                                                                              |                     | ✔              |
-| **Управление тарифами (Tariff):** CRUD                                                                                        |                     | ✔              |
-| **Управление окнами обслуживания (MaintenanceWindow):** CRUD                                                                  |                     | ✔              |
-| **Аренда: создание заказа клиентом (RentalOrder)** — проверка доступности, расчёт стоимости, история статусов                 | ✔                   |                |
-| **Управление арендой со стороны менеджера** — перевод заказа в статусы `ISSUED` и `COMPLETED`                                 |                     | ✔              |
-| **Публичный раздел: поиск доступных автомобилей** (`GET /cars/available?from=&to=`) + Redis‑кэширование                       | ✔                   |                |
-| **Личный кабинет клиента** (фронтенд)                                                                                         | ✔                   |                |
-| **Личный кабинет менеджера** (фронтенд)                                                                                       |                     | ✔              |
-| **Уведомления менеджеру о новой аренде**                                                                                      | ✔                   |                |
+| Variable | Default | Description |
+| --- | --- | --- |
+| `SERVER_PORT` | `8081` | Backend HTTP port |
+| `DB_URL` | `jdbc:postgresql://localhost:5432/car_rental` | PostgreSQL JDBC URL |
+| `DB_USERNAME` | `postgres` | Database user |
+| `DB_PASSWORD` | `postgres` | Database password |
+
+## Local Run
+
+### Frontend
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Frontend URL: `http://localhost:5173`
+
+### Backend
+
+```bash
+cd backend
+./gradlew bootRun
+```
+
+Backend URL: `http://localhost:8081`
+
+Swagger UI: `http://localhost:8081/swagger-ui.html`
+
+## Quality Commands
+
+### Frontend
+
+```bash
+cd frontend
+npm run typecheck
+npm run lint
+npm run format:check
+npm run build
+```
+
+### Backend
+
+```bash
+cd backend
+./gradlew spotlessCheck
+./gradlew test
+```
+
+## Docker (Frontend)
+
+```bash
+docker compose build frontend
+docker compose up -d
+```

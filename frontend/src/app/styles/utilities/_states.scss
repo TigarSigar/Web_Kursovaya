@@ -1,0 +1,29 @@
+@layer utilities {
+  .text-faint {
+    color: var(--text-faint);
+  }
+
+  .text-muted {
+    color: var(--text-muted);
+  }
+
+  .radius-xs {
+    border-radius: var(--radius-xs);
+  }
+
+  .radius-sm {
+    border-radius: var(--radius-sm);
+  }
+
+  .radius-md {
+    border-radius: var(--radius-md);
+  }
+
+  .radius-lg {
+    border-radius: var(--radius-lg);
+  }
+
+  .radius-xl {
+    border-radius: var(--radius-xl);
+  }
+}

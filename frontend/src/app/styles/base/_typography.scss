@@ -1,0 +1,27 @@
+html {
+  font-family: var(--font-family-base);
+  font-size: 16px;
+  line-height: var(--line-height-normal);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-family-heading);
+  line-height: var(--line-height-snug);
+  color: rgb(var(--color-text-primary));
+}
+
+p,
+li,
+span,
+label,
+input,
+textarea,
+select,
+button {
+  color: rgb(var(--color-text-primary));
+}

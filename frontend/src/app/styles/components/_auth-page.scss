@@ -1,0 +1,118 @@
+.auth-page {
+  min-height: 100vh;
+  padding: var(--space-8) var(--space-4);
+  background: rgb(var(--color-bg));
+  color: rgb(var(--color-text-primary));
+
+  &__toolbar,
+  &__layout {
+    max-width: 72rem;
+    margin-inline: auto;
+  }
+
+  &__toolbar {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--space-2);
+    margin-bottom: var(--space-6);
+  }
+
+  &__layout {
+    display: grid;
+    gap: var(--space-7);
+  }
+
+  &__hero,
+  &__panel {
+    position: relative;
+    overflow: hidden;
+    padding: var(--space-7);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-2xl);
+  }
+
+  &__hero {
+    background: radial-gradient(circle at top, rgb(var(--color-accent) / 0.16), transparent 44%), var(--surface-panel);
+  }
+
+  &__panel {
+    background: var(--surface-glass-strong);
+    box-shadow: var(--shadow-panel);
+  }
+
+  &__hero-text,
+  &__panel-text,
+  &__feature-text,
+  &__footer {
+    margin-top: var(--space-3);
+    font-size: var(--font-size-sm);
+    line-height: var(--line-height-relaxed);
+    color: var(--text-muted);
+  }
+
+  &__hero-text {
+    margin-top: var(--space-6);
+    max-width: 42rem;
+    font-size: var(--font-size-lg);
+  }
+
+  &__feature-card {
+    padding: var(--space-5);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-xl);
+    background: var(--surface-glass);
+  }
+
+  &__role-tabs {
+    display: flex;
+    padding: var(--space-1);
+    margin-top: var(--space-8);
+    border-radius: var(--radius-lg);
+    background: var(--surface-glass);
+  }
+
+  &__role-button {
+    flex: 1;
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    color: var(--text-muted);
+    transition:
+      background-color var(--duration-fast) var(--ease-standard),
+      color var(--duration-fast) var(--ease-standard),
+      box-shadow var(--duration-fast) var(--ease-standard);
+
+    &--active {
+      color: rgb(var(--color-accent-contrast));
+      background: rgb(var(--color-accent));
+      box-shadow: var(--shadow-glow);
+    }
+  }
+
+  &__password-toggle {
+    position: absolute;
+    top: 50%;
+    right: var(--space-4);
+    transform: translateY(-50%);
+    color: var(--text-muted);
+  }
+
+  &__footer {
+    margin-top: var(--space-6);
+    text-align: center;
+  }
+}
+
+@media (min-width: 1024px) {
+  .auth-page {
+    &__layout {
+      grid-template-columns: 1.1fr 0.9fr;
+    }
+
+    &__hero,
+    &__panel {
+      padding: var(--space-9);
+    }
+  }
+}

@@ -1,0 +1,14 @@
+@use 'sass:map';
+@use 'sass:string';
+
+@function alpha-color($var-name, $alpha) {
+  @return string.unquote('rgb(var(#{$var-name}) / #{$alpha})');
+}
+
+@function token($token-map, $key) {
+  @if map.has-key($token-map, $key) {
+    @return map.get($token-map, $key);
+  }
+
+  @error 'Token "#{$key}" is not defined in map.';
+}
