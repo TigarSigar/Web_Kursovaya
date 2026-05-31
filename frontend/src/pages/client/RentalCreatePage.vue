@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { ChevronLeft, ChevronRight } from 'lucide-vue-next'
+import { ChevronLeft, ChevronRight, X } from 'lucide-vue-next'
 import PriceBreakdown from '@/components/rentals/PriceBreakdown.vue'
 import ErrorState from '@/components/common/ErrorState.vue'
 import DateRangePicker from '@/components/common/DateRangePicker.vue'
@@ -23,6 +23,14 @@ const rentalsStore = useRentalsStore()
 const uiStore = useUiStore()
 const { locale } = useI18n()
 
+const LOCATIONS = [
+  'Международный аэропорт Кемерово имени А.А.Леонова',
+  'Железнодорожный Вокзал города Кемерово',
+  'Кузбасс Арена',
+]
+
+const showLicenseError = ref(false)
+
 const form = reactive({
   pickupLocation: '',
   returnLocation: '',
@@ -35,6 +43,20 @@ const rentalDates = reactive({
 })
 
 const selectedImageIndex = ref(0)
+
+const licenseModalCopy = computed(() =>
+  locale.value === 'ru'
+    ? {
+        title: 'Водительское удостоверение не найдено',
+        text: 'Для оформления аренды необходимо добавить данные водительского удостоверения в настройках аккаунта.',
+        action: 'Перейти в настройки',
+      }
+    : {
+        title: 'Driver license not found',
+        text: 'To book a rental, you need to add your driver license details in account settings.',
+        action: 'Go to settings',
+      },
+)
 
 const copy = computed(() =>
   locale.value === 'ru'
@@ -151,8 +173,10 @@ async function syncRouteDates() {
 function setDefaultFormValues() {
   if (!selectedCar.value) return
 
-  form.pickupLocation = form.pickupLocation || selectedCar.value.location
-  form.returnLocation = form.returnLocation || selectedCar.value.location
+  form.pickupLocation = selectedCar.value.location
+  if (!form.returnLocation) {
+    form.returnLocation = selectedCar.value.location
+  }
 
   if (!compatibleTariffs.value.some((item) => item.id === form.tariffId)) {
     form.tariffId = compatibleTariffs.value[0]?.id ?? ''
@@ -169,14 +193,7 @@ function showNextImage() {
   selectedImageIndex.value = selectedImageIndex.value === imageUrls.value.length - 1 ? 0 : selectedImageIndex.value + 1
 }
 
-watch(
-  () => [route.query.from, route.query.to],
-  ([from, to]) => {
-    rentalDates.from = typeof from === 'string' ? from : ''
-    rentalDates.to = typeof to === 'string' ? to : ''
-  },
-  { immediate: true },
-)
+
 
 watch(selectedCar, () => {
   selectedImageIndex.value = 0
@@ -195,12 +212,20 @@ watch(
 )
 
 onMounted(async () => {
+  rentalDates.from = typeof route.query.from === 'string' ? route.query.from : ''
+  rentalDates.to = typeof route.query.to === 'string' ? route.query.to : ''
+
   await Promise.all([carsStore.fetchAll(), tariffsStore.fetchAll()])
   setDefaultFormValues()
   await refreshAvailability()
 })
 
 async function submit() {
+  if (!authStore.currentClientProfile?.driverLicenseNumber) {
+    showLicenseError.value = true
+    return
+  }
+
   if (!authStore.currentClientProfile || !selectedCar.value || !selectedTariff.value || !rentalDates.from || !rentalDates.to || carUnavailable.value) {
     return
   }
@@ -242,7 +267,7 @@ async function submit() {
     </div>
 
     <ErrorState
-      v-if="!selectedCar || !selectedTariff || !rentalDates.from || !rentalDates.to"
+      v-if="!selectedCar"
       :title="copy.unavailableTitle"
       :message="copy.unavailableText"
       @retry="router.push('/client/search')"
@@ -297,41 +322,7 @@ async function submit() {
           <p class="rental-create-page__car-meta">{{ selectedCar.plateNumber }} • {{ humanizeEnum(selectedCar.carClass) }} • {{ selectedCar.location }}</p>
         </article>
 
-        <article class="card-base rental-create-page__details-card">
-          <div class="rental-create-page__details-header">
-            <h2 class="rental-create-page__details-title">{{ copy.params }}</h2>
-            <p class="rental-create-page__details-note">{{ copy.recalculate }}</p>
-          </div>
 
-          <div v-if="carUnavailable" class="rental-create-page__availability-alert">
-            <p>{{ blockingResult?.reasons?.[0] ?? copy.availabilityError }}</p>
-          </div>
-
-          <div class="rental-create-page__form-grid">
-            <div class="rental-create-page__dates">
-              <DateRangePicker v-model:from="rentalDates.from" v-model:to="rentalDates.to" />
-            </div>
-
-            <label class="field-group">
-              <span class="field-label">{{ copy.pickup }}</span>
-              <input v-model="form.pickupLocation" class="input-base" />
-            </label>
-
-            <label class="field-group">
-              <span class="field-label">{{ copy.return }}</span>
-              <input v-model="form.returnLocation" class="input-base" />
-            </label>
-
-            <label class="field-group rental-create-page__tariff-field">
-              <span class="field-label">{{ copy.tariff }}</span>
-              <select v-model="form.tariffId" class="input-base">
-                <option v-for="tariff in compatibleTariffs" :key="tariff.id" :value="tariff.id">
-                  {{ tariff.name }} • {{ tariff.dailyPrice }} ₽
-                </option>
-              </select>
-            </label>
-          </div>
-        </article>
 
         <article class="card-base rental-create-page__client-card">
           <h2 class="rental-create-page__details-title">{{ copy.client }}</h2>
@@ -349,9 +340,46 @@ async function submit() {
       </div>
 
       <div class="rental-create-page__sidebar">
-        <PriceBreakdown v-if="breakdown" :breakdown="breakdown" :tariff="selectedTariff" />
+        <article class="card-base rental-create-page__details-card">
+          <div class="rental-create-page__details-header">
+            <h2 class="rental-create-page__details-title">{{ copy.params }}</h2>
+            <p class="rental-create-page__details-note">{{ copy.recalculate }}</p>
+          </div>
 
-        <article class="card-base rental-create-page__restrictions-card">
+          <div v-if="carUnavailable" class="rental-create-page__availability-alert">
+            <p>{{ blockingResult?.reasons?.[0] ?? copy.availabilityError }}</p>
+          </div>
+
+          <div class="rental-create-page__form-grid">
+            <div class="rental-create-page__dates">
+              <DateRangePicker v-model:from="rentalDates.from" v-model:to="rentalDates.to" />
+            </div>
+
+            <label class="field-group">
+              <span class="field-label">{{ copy.pickup }}</span>
+              <input :value="selectedCar.location" class="input-base" disabled />
+            </label>
+
+            <label class="field-group">
+              <span class="field-label">{{ copy.return }}</span>
+              <select v-model="form.returnLocation" class="input-base">
+                <option v-for="loc in LOCATIONS" :key="loc" :value="loc">{{ loc }}</option>
+              </select>
+            </label>
+
+            <label class="field-group rental-create-page__tariff-field">
+              <span class="field-label">{{ copy.tariff }}</span>
+              <select v-model="form.tariffId" class="input-base">
+                <option v-for="tariff in compatibleTariffs" :key="tariff.id" :value="tariff.id">
+                  {{ tariff.name }} • {{ tariff.dailyPrice }} ₽
+                </option>
+              </select>
+            </label>
+          </div>
+        </article>
+        <PriceBreakdown v-if="breakdown && selectedTariff" :breakdown="breakdown" :tariff="selectedTariff" />
+
+        <article v-if="selectedTariff" class="card-base rental-create-page__restrictions-card">
           <h2 class="rental-create-page__details-title">{{ copy.restrictions }}</h2>
           <ul class="rental-create-page__restrictions-list">
             <li v-for="restriction in selectedTariff.restrictions" :key="restriction">• {{ restriction }}</li>
@@ -365,6 +393,21 @@ async function submit() {
         </button>
       </div>
     </div>
+
+    <Teleport to="body">
+      <div v-if="showLicenseError" class="rental-create-page__modal-overlay" @click.self="showLicenseError = false">
+        <div class="rental-create-page__modal">
+          <button class="rental-create-page__modal-close" type="button" @click="showLicenseError = false">
+            <X class="h-5 w-5" />
+          </button>
+          <h2 class="rental-create-page__modal-title">{{ licenseModalCopy.title }}</h2>
+          <p class="rental-create-page__modal-text">{{ licenseModalCopy.text }}</p>
+          <button class="btn-primary rental-create-page__modal-action" type="button" @click="router.push('/client/account')">
+            {{ licenseModalCopy.action }}
+          </button>
+        </div>
+      </div>
+    </Teleport>
   </section>
 </template>
 
@@ -569,9 +612,67 @@ async function submit() {
   }
 
   &__submit {
+    justify-content: center;
+  }
+
+  &__modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+  }
+
+  &__modal {
+    position: relative;
+    width: 100%;
+    max-width: 460px;
+    padding: 28px 24px;
+    border: 1px solid var(--border-subtle);
+    border-radius: 12px;
+    background: rgb(var(--color-background));
+  }
+
+  &__modal-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+    border: none;
+    border-radius: 6px;
+    color: var(--text-muted);
+    background: transparent;
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: rgb(var(--color-foreground));
+    }
+  }
+
+  &__modal-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: rgb(var(--color-foreground));
+  }
+
+  &__modal-text {
+    margin-top: 12px;
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--text-muted);
+  }
+
+  &__modal-action {
+    margin-top: 20px;
     width: 100%;
     justify-content: center;
-    min-height: 52px;
+    min-height: 44px;
   }
 }
 

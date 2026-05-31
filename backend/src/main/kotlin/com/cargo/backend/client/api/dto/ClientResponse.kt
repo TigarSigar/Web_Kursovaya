@@ -11,6 +11,7 @@ data class ClientResponse(
     val driverLicenseNumber: String,
     val driverLicenseExpiry: String,
     val memberSince: String,
+    val avatarBase64: String?,
     val createdAt: Instant?,
     val updatedAt: Instant?
 )

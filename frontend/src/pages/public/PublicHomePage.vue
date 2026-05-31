@@ -26,17 +26,17 @@ const { locale } = useI18n()
 const copy = computed(() =>
   locale.value === 'ru'
     ? {
-        titleLine1: 'Путешествуйте',
-        titleLine2: 'с уверенностью',
-        titleLine3: 'и комфортом',
+        titleLine1: 'Твой город.',
+        titleLine2: 'Твой автомобиль.',
+        titleLine3: 'Твой маршрут.',
         subtitle:
-          'Выбирайте автомобили из широкого каталога, бронируйте онлайн и получайте надёжный сервис без лишних шагов.',
+          'Свобода передвижения на ваших условиях. Широкий выбор автомобилей от эконома до премиум-класса для комфортных поездок по городу и за его пределами.',
         explore: 'Смотреть автомобили',
         about: 'Как это работает',
         heroCaption: 'Надёжный прокат с быстрым подтверждением и прозрачными условиями.',
-        heroStatFleet: 'автомобилей в каталоге',
-        heroStatSupport: 'поддержка по заявке',
-        heroStatTheme: 'единый интерфейс и темы',
+        heroStatFleet: 'автомобилей на выбор',
+        heroStatSupport: 'круглосуточная поддержка',
+        heroStatTheme: 'страховка включена',
         heroPointLocation: 'Гибкая точка выдачи',
         heroPointLocationText: 'Подберём удобное место передачи автомобиля под маршрут клиента.',
         heroPointService: 'Прозрачные условия',
@@ -47,13 +47,13 @@ const copy = computed(() =>
         all: 'Все автомобили',
         info: 'Информация и условия',
         infoText:
-          'Главная страница теперь собрана как маршрут пользователя: сначала выбор автомобиля, затем условия сервиса, процесс бронирования и финальный переход в каталог.',
-        infoLead: 'Сервис аренды без разрыва между витриной и рабочим сценарием бронирования.',
+          'Арендуйте автомобиль всего в несколько кликов: выберите подходящую машину, ознакомьтесь с понятными условиями и забронируйте онлайн.',
+        infoLead: 'Ваш идеальный автомобиль уже ждет вас.',
         infoCardTitle: 'Что входит',
         infoCardText:
-          'Подтверждение доступности, прозрачная стоимость, сопровождение по выдаче и возврату, а также единый интерфейс в светлой и тёмной теме.',
+          'Мы гарантируем идеальное техническое состояние всех автомобилей, полную страховку и кристально прозрачные условия аренды без скрытых платежей.',
         why: 'Почему CarGO',
-        whyText: 'Тот же визуальный стиль проекта, но с более собранной структурой и понятным сценарием на первом экране.',
+        whyText: 'Мы делаем аренду автомобилей удобной, безопасной и выгодной для каждого клиента.',
         insuranceTitle: 'Полное покрытие',
         insuranceText: 'Условия защиты и ограничения по аренде показываются до оформления заявки.',
         supportTitle: 'Поддержка 24/7',
@@ -63,7 +63,7 @@ const copy = computed(() =>
         bookingTitle: 'Быстрый переход к бронированию',
         bookingText: 'Поиск на первом экране сразу ведёт в каталог с уже заполненными параметрами.',
         how: 'Как это работает',
-        howText: 'Новая композиция усиливает тот же сценарий аренды и делает его читаемым с первого экрана.',
+        howText: 'Простой процесс от выбора автомобиля до получения ключей.',
         howLocationTitle: 'Выберите локацию',
         howLocationText: 'Укажите удобную точку выдачи и возврата автомобиля.',
         howDatesTitle: 'Выберите даты',
@@ -83,9 +83,9 @@ const copy = computed(() =>
           'Заявки принимаются круглосуточно, подтверждение, выдача и возврат выполняются менеджером в рабочие часы.',
       }
     : {
-        titleLine1: 'Drive with',
-        titleLine2: 'Confidence',
-        titleLine3: 'and Comfort',
+        titleLine1: 'Your city.',
+        titleLine2: 'Your car.',
+        titleLine3: 'Your route.',
         subtitle:
           'Choose from a wide range of cars, book easily online, and enjoy a smooth, reliable driving experience wherever you go.',
         explore: 'Explore Cars',
@@ -145,7 +145,7 @@ const locations = computed(() => [...new Set(carsStore.items.map((car) => car.lo
 const heroStats = computed(() => [
   { value: `${carsStore.items.length || 0}+`, label: copy.value.heroStatFleet },
   { value: '24/7', label: copy.value.heroStatSupport },
-  { value: 'UI', label: copy.value.heroStatTheme },
+  { value: '100%', label: copy.value.heroStatTheme },
 ])
 
 onMounted(async () => {
@@ -182,8 +182,7 @@ function handleSearch(params: SearchCarsParams) {
                   {{ copy.titleLine1 }}
                   <span class="text-primary">{{ copy.titleLine2 }}</span>
                   <br />
-                  {{ locale === 'ru' ? 'Выбирайте' : 'Travel with' }}
-                  <span class="text-primary">{{ copy.titleLine3 }}</span>
+                  {{ copy.titleLine3 }}
                 </h1>
                 <p class="page-subtitle public-home__hero-subtitle">{{ copy.subtitle }}</p>
               </div>
@@ -256,8 +255,6 @@ function handleSearch(params: SearchCarsParams) {
             v-for="car in featuredCars"
             :key="car.id"
             :car="car"
-            :action-label="copy.view"
-            :action-to="`/cars?carClass=${car.carClass}`"
           />
         </div>
 
@@ -279,10 +276,10 @@ function handleSearch(params: SearchCarsParams) {
             <p class="page-subtitle public-home__feature-panel-subtitle">{{ copy.infoText }}</p>
 
             <div class="public-home__chip-row">
-              <span class="chip">UI</span>
-              <span class="chip">{{ locale === 'ru' ? 'Поиск' : 'Search' }}</span>
-              <span class="chip">{{ locale === 'ru' ? 'Каталог' : 'Catalog' }}</span>
-              <span class="chip">{{ locale === 'ru' ? 'Поддержка' : 'Support' }}</span>
+              <span class="chip">{{ locale === 'ru' ? 'Надежность' : 'Reliability' }}</span>
+              <span class="chip">{{ locale === 'ru' ? 'Комфорт' : 'Comfort' }}</span>
+              <span class="chip">{{ locale === 'ru' ? 'КАСКО' : 'Insurance' }}</span>
+              <span class="chip">{{ locale === 'ru' ? 'Без залога' : 'No Deposit' }}</span>
             </div>
 
             <div class="public-home__info-card card-base">

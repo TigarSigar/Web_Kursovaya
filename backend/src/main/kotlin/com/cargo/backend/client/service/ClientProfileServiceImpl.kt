@@ -37,7 +37,7 @@ class ClientProfileServiceImpl(
             phone = request.phone.trim(),
             driverLicenseNumber = request.driverLicenseNumber?.trim()?.ifBlank { null },
             driverLicenseExpiry = request.driverLicenseExpiry?.trim()?.ifBlank { null },
-            memberSince = java.time.LocalDate.now().toString()
+            memberSince = java.time.Instant.now()
         )
         return clientProfileRepository.save(entity).toFrontendResponse()
     }
@@ -55,6 +55,9 @@ class ClientProfileServiceImpl(
         entity.phone = request.phone.trim()
         entity.driverLicenseNumber = request.driverLicenseNumber?.trim()?.ifBlank { null }
         entity.driverLicenseExpiry = request.driverLicenseExpiry?.trim()?.ifBlank { null }
+        if (request.avatarBase64 != null) {
+            entity.avatarBase64 = request.avatarBase64
+        }
         return clientProfileRepository.save(entity).toFrontendResponse()
     }
 

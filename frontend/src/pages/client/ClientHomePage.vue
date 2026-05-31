@@ -151,9 +151,6 @@ function submitSearch(params: SearchCarsParams) {
         v-for="car in carsStore.featuredCars"
         :key="car.id"
         :car="car"
-        theme="dark"
-        :action-label="copy.startSearch"
-        :action-to="`/client/search?carClass=${car.carClass}`"
       />
     </div>
   </section>

@@ -14,6 +14,7 @@ import RentalProcessingPage from '@/pages/manager/RentalProcessingPage.vue'
 import RentalsManagementPage from '@/pages/manager/RentalsManagementPage.vue'
 import TariffFormPage from '@/pages/manager/TariffFormPage.vue'
 import TariffsManagementPage from '@/pages/manager/TariffsManagementPage.vue'
+import UsersManagementPage from '@/pages/manager/UsersManagementPage.vue'
 import PublicHomePage from '@/pages/public/PublicHomePage.vue'
 import AccountPage from '@/pages/shared/AccountPage.vue'
 import ForbiddenPage from '@/pages/shared/ForbiddenPage.vue'
@@ -76,6 +77,7 @@ const router = createRouter({
         { path: 'maintenance/:id/edit', component: MaintenanceFormPage },
         { path: 'rentals', component: RentalsManagementPage },
         { path: 'rentals/:id', component: RentalProcessingPage },
+        { path: 'users', component: UsersManagementPage },
       ],
     },
     { path: '/:pathMatch(.*)*', component: NotFoundPage },

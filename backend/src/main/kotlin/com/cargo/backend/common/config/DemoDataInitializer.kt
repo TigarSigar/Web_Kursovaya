@@ -56,8 +56,9 @@ class DemoDataInitializer {
                     seats = 5,
                     transmission = TransmissionType.AUTOMATIC,
                     fuelType = FuelType.PETROL,
-                    location = "Новосибирск, Центр",
+                    location = "Международный аэропорт Кемерово имени А.А.Леонова",
                     odometerKm = 21500,
+                    pricePerDay = BigDecimal("2000"),
                     imageUrls = emptyList<String>().toStoredMultiline(),
                     notes = "Основной городской автомобиль для коротких и средних поездок."
                 ),
@@ -72,8 +73,9 @@ class DemoDataInitializer {
                     seats = 5,
                     transmission = TransmissionType.AUTOMATIC,
                     fuelType = FuelType.PETROL,
-                    location = "Аэропорт Толмачево",
+                    location = "Железнодорожный Вокзал города Кемерово",
                     odometerKm = 38210,
+                    pricePerDay = BigDecimal("2200"),
                     imageUrls = emptyList<String>().toStoredMultiline(),
                     notes = "Экономичный вариант для аренды от 1 суток."
                 ),
@@ -88,8 +90,9 @@ class DemoDataInitializer {
                     seats = 5,
                     transmission = TransmissionType.AUTOMATIC,
                     fuelType = FuelType.HYBRID,
-                    location = "Новосибирск, Центр",
+                    location = "Кузбасс Арена",
                     odometerKm = 14120,
+                    pricePerDay = BigDecimal("2800"),
                     imageUrls = emptyList<String>().toStoredMultiline(),
                     notes = "Часто используется для корпоративных клиентов."
                 ),
@@ -104,7 +107,7 @@ class DemoDataInitializer {
                     seats = 5,
                     transmission = TransmissionType.AUTOMATIC,
                     fuelType = FuelType.PETROL,
-                    location = "Академгородок",
+                    location = "Железнодорожный Вокзал города Кемерово",
                     odometerKm = 8600,
                     imageUrls = emptyList<String>().toStoredMultiline(),
                     notes = "Подходит для поездок за город и семейных маршрутов."
@@ -120,7 +123,7 @@ class DemoDataInitializer {
                     seats = 5,
                     transmission = TransmissionType.AUTOMATIC,
                     fuelType = FuelType.PETROL,
-                    location = "Новосибирск, Центр",
+                    location = "Международный аэропорт Кемерово имени А.А.Леонова",
                     odometerKm = 55200,
                     imageUrls = emptyList<String>().toStoredMultiline(),
                     notes = "Снят с выдачи до решения по капитальному ремонту."
@@ -136,7 +139,7 @@ class DemoDataInitializer {
                     seats = 5,
                     transmission = TransmissionType.AUTOMATIC,
                     fuelType = FuelType.PETROL,
-                    location = "ЖД вокзал",
+                    location = "Кузбасс Арена",
                     odometerKm = 47400,
                     imageUrls = emptyList<String>().toStoredMultiline(),
                     notes = "Сейчас проходит плановое обслуживание."
@@ -221,7 +224,7 @@ class DemoDataInitializer {
                     phone = "+7 (913) 555-00-11",
                     driverLicenseNumber = "54 11 123456",
                     driverLicenseExpiry = "2028-11-01",
-                    memberSince = "2024-02-18"
+                    memberSince = Instant.parse("2024-02-18T10:00:00Z")
                 ),
                 ClientProfile(
                     fullName = "Игорь Петров",
@@ -229,7 +232,7 @@ class DemoDataInitializer {
                     phone = "+7 (983) 555-22-44",
                     driverLicenseNumber = "54 22 654321",
                     driverLicenseExpiry = "2027-05-14",
-                    memberSince = "2023-09-10"
+                    memberSince = Instant.parse("2023-09-10T12:00:00Z")
                 )
             )
         )
@@ -268,8 +271,8 @@ class DemoDataInitializer {
                 tariff = tariffsByName.getValue("Business Trip"),
                 startDate = LocalDate.now().minusDays(3),
                 endDate = LocalDate.now().plusDays(1),
-                pickupLocation = "Новосибирск, Центр",
-                returnLocation = "Новосибирск, Центр",
+                pickupLocation = "Международный аэропорт Кемерово имени А.А.Леонова",
+                returnLocation = "Международный аэропорт Кемерово имени А.А.Леонова",
                 totalDays = 4,
                 basePrice = BigDecimal("2600"),
                 dailyPrice = BigDecimal("4700"),

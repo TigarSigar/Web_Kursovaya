@@ -21,6 +21,7 @@ data class CarResponse(
     val location: String,
     val odometerKm: Int,
     val imageUrls: List<String>,
+    val pricePerDay: java.math.BigDecimal?,
     val notes: String?,
     val createdAt: Instant?,
     val updatedAt: Instant?

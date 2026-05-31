@@ -7,12 +7,10 @@ import SearchForm from '@/components/cars/SearchForm.vue'
 import EmptyState from '@/components/common/EmptyState.vue'
 import ErrorState from '@/components/common/ErrorState.vue'
 import { useI18n } from '@/i18n'
-import { useAuthStore } from '@/store/auth'
 import { useCarsStore } from '@/store/cars'
 import type { SearchCarsParams, CarClass } from '@/types/entities'
 
 const carsStore = useCarsStore()
-const authStore = useAuthStore()
 const route = useRoute()
 const router = useRouter()
 const { locale } = useI18n()
@@ -84,20 +82,6 @@ function submitSearch(params: SearchCarsParams) {
   })
 }
 
-function buildRentalLink(carId: string): string {
-  const query = new URLSearchParams({
-    carId,
-    from: searchParams.value.from,
-    to: searchParams.value.to,
-  })
-
-  if (!authStore.isAuthenticated) {
-    return `/login?redirect=${encodeURIComponent(`/client/rentals/new?${query.toString()}`)}`
-  }
-
-  return `/client/rentals/new?${query.toString()}`
-}
-
 onMounted(runSearch)
 watch(() => route.fullPath, runSearch)
 </script>
@@ -137,9 +121,6 @@ watch(() => route.fullPath, runSearch)
               v-for="item in available"
               :key="item.car.id"
               :car="item.car"
-              :result="item"
-              :action-label="authStore.isAuthenticated ? copy.book : copy.signIn"
-              :action-to="buildRentalLink(item.car.id)"
             />
           </div>
           <EmptyState
@@ -157,7 +138,7 @@ watch(() => route.fullPath, runSearch)
             <p class="available-cars-page__section-count">{{ unavailable.length }} {{ copy.vehicles }}</p>
           </div>
           <div v-if="unavailable.length" class="grid gap-6 xl:grid-cols-2">
-            <CarCard v-for="item in unavailable" :key="item.car.id" :car="item.car" :result="item" />
+            <CarCard v-for="item in unavailable" :key="item.car.id" :car="item.car" />
           </div>
         </section>
       </template>

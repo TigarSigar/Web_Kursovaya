@@ -58,6 +58,8 @@ data class CarUpdateRequest(
     @field:Size(max = 2000, message = "Notes must be at most 2000 characters")
     val notes: String? = null,
 
+    val pricePerDay: java.math.BigDecimal? = null,
+
     @field:NotNull(message = "Status is required")
     val status: CarStatus
 )

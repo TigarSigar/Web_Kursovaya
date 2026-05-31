@@ -33,6 +33,7 @@ export interface Car {
   fuelType: FuelType
   location: string
   odometerKm: number
+  pricePerDay?: number
   imageUrl?: string
   imageUrls?: string[]
   notes?: string
@@ -61,6 +62,7 @@ export interface ClientProfile {
   driverLicenseNumber: string
   driverLicenseExpiry: string
   memberSince: string
+  avatarBase64?: string
 }
 
 export interface UserAccount {
@@ -158,6 +160,7 @@ export interface CarFormModel {
   fuelType: FuelType
   location: string
   odometerKm: number
+  pricePerDay: number
   imageUrls: string[]
   notes: string
 }
@@ -198,4 +201,18 @@ export interface RentalCreatePayload {
 export interface TableColumn {
   key: string
   label: string
+}
+
+export interface CarReview {
+  id: number
+  authorName: string
+  authorAvatarBase64?: string
+  content: string
+  rating: number
+  createdAt: string
+}
+
+export interface CarReviewPayload {
+  content: string
+  rating: number
 }

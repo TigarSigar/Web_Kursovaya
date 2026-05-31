@@ -32,8 +32,11 @@ class ClientProfile(
     @Column(name = "driver_license_expiry", length = 20)
     var driverLicenseExpiry: String? = null,
 
-    @Column(name = "member_since", length = 20)
-    var memberSince: String? = null,
+    @Column(name = "member_since")
+    var memberSince: Instant? = null,
+
+    @Column(name = "avatar_base64", columnDefinition = "TEXT")
+    var avatarBase64: String? = null,
 
     @Column(name = "created_at", nullable = false, updatable = false)
     var createdAt: Instant? = null,

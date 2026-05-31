@@ -22,5 +22,7 @@ data class ClientUpdateRequest(
     val driverLicenseNumber: String? = null,
 
     @field:Size(max = 20, message = "Driver license expiry must be at most 20 characters")
-    val driverLicenseExpiry: String? = null
+    val driverLicenseExpiry: String? = null,
+
+    val avatarBase64: String? = null
 )

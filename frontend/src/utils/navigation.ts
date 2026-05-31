@@ -15,5 +15,6 @@ export const navigationItems: NavItem[] = [
   { labelKey: 'nav.cars', to: '/manager/cars', icon: 'Car', roles: ['FLEET_MANAGER'] },
   { labelKey: 'nav.tariffs', to: '/manager/tariffs', icon: 'BadgeRussianRuble', roles: ['FLEET_MANAGER'] },
   { labelKey: 'nav.maintenance', to: '/manager/maintenance', icon: 'Wrench', roles: ['FLEET_MANAGER'] },
+  { labelKey: 'nav.users', to: '/manager/users', icon: 'Users', roles: ['FLEET_MANAGER'] },
   { labelKey: 'nav.rentals', to: '/manager/rentals', icon: 'ClipboardCheck', roles: ['FLEET_MANAGER'] },
 ]

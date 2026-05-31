@@ -17,6 +17,39 @@ import { hasBlockingMaintenance, hasBlockingRental, getMaintenanceOverlapReason,
 import { formatDate, getTodayIsoDate, isDateInPast, isValidDateRange, overlaps } from '@/utils/date'
 import { calculatePriceBreakdown } from '@/utils/price'
 
+const LOCATION_LIMITS: Record<string, number> = {
+  'Международный аэропорт Кемерово имени А.А.Леонова': 15,
+  'Железнодорожный Вокзал города Кемерово': 15,
+  'Кузбасс Арена': 10,
+}
+
+function getOccupiedSlotsAtDate(state: MockDatabaseState, location: string, dateIso: string): number {
+  let count = 0;
+  for (const car of state.cars) {
+    let currentLocation = car.location;
+    let isRented = false;
+    
+    const activeRentals = state.rentals
+      .filter(r => r.carId === car.id && ['CREATED', 'CONFIRMED', 'ISSUED'].includes(r.status))
+      .sort((a, b) => new Date(a.from).getTime() - new Date(b.from).getTime());
+      
+    for (const r of activeRentals) {
+      if (dateIso >= r.from && dateIso < r.to) {
+        isRented = true;
+        break;
+      }
+      if (dateIso >= r.to) {
+        currentLocation = r.returnLocation;
+      }
+    }
+    
+    if (!isRented && currentLocation === location) {
+      count++;
+    }
+  }
+  return count;
+}
+
 const STORAGE_KEY = 'car-rental-service-db-v1'
 const LATENCY_MS = 180
 
@@ -200,6 +233,15 @@ export const mockDb = {
   async getClientProfile(clientId: string): Promise<ClientProfile> {
     const state = readState()
     return delay(ensureClientExists(state, clientId))
+  },
+
+  async updateClientProfile(clientId: string, payload: Partial<ClientProfile>): Promise<ClientProfile> {
+    const state = readState()
+    const client = ensureClientExists(state, clientId)
+    const updated = { ...client, ...payload }
+    state.clients = state.clients.map(c => c.id === clientId ? updated : c)
+    writeState(state)
+    return delay(updated)
   },
 
   async listCars(): Promise<Car[]> {
@@ -435,6 +477,14 @@ export const mockDb = {
       throw new ApiError(`Минимальная длительность аренды по тарифу ${tariff.name}: ${tariff.minimumDays} дн.`)
     }
 
+    const limit = LOCATION_LIMITS[payload.returnLocation]
+    if (limit !== undefined) {
+      const occupied = getOccupiedSlotsAtDate(state, payload.returnLocation, payload.to)
+      if (occupied >= limit) {
+        throw new ApiError(`Локация возврата переполнена (занято ${occupied} из ${limit}). Выберите другую локацию.`)
+      }
+    }
+
     const rentalId = nextId('rental')
     const rental: RentalOrder = {
       id: rentalId,
@@ -522,6 +572,7 @@ export const mockDb = {
     )
 
     state.rentals = state.rentals.map((item) => (item.id === rentalId ? completed : item))
+    state.cars = state.cars.map((c) => c.id === rental.carId ? { ...c, location: rental.returnLocation } : c)
     restoreCarOperationalStatus(state, rental.carId)
     writeState(state)
     return delay(hydrateRental(state, completed))

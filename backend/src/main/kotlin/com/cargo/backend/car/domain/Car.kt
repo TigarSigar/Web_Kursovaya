@@ -10,6 +10,7 @@ import jakarta.persistence.Id
 import jakarta.persistence.PrePersist
 import jakarta.persistence.PreUpdate
 import jakarta.persistence.Table
+import java.math.BigDecimal
 import java.time.Instant
 
 @Entity
@@ -61,6 +62,9 @@ class Car(
 
     @Column(name = "image_urls", columnDefinition = "TEXT")
     var imageUrls: String? = null,
+
+    @Column(name = "price_per_day", precision = 10, scale = 2)
+    var pricePerDay: BigDecimal? = null,
 
     @Column(name = "notes", length = 2000)
     var notes: String? = null,

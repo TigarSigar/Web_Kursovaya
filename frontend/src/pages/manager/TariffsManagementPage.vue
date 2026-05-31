@@ -5,12 +5,15 @@ import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import EmptyState from '@/components/common/EmptyState.vue'
 import ErrorState from '@/components/common/ErrorState.vue'
 import { useI18n } from '@/i18n'
+import { useCarsStore } from '@/store/cars'
 import { useTariffsStore } from '@/store/tariffs'
 import { useUiStore } from '@/store/ui'
 import { formatCurrency, humanizeEnum } from '@/utils/format'
+import type { Tariff } from '@/types/entities'
 
 const router = useRouter()
 const tariffsStore = useTariffsStore()
+const carsStore = useCarsStore()
 const uiStore = useUiStore()
 const tariffToRemove = ref<string | null>(null)
 const { locale, t } = useI18n()
@@ -48,8 +51,22 @@ const copy = computed(() =>
 const grouped = computed(() => tariffsStore.items)
 
 onMounted(async () => {
-  await tariffsStore.fetchAll()
+  await Promise.all([tariffsStore.fetchAll(), carsStore.fetchAll()])
 })
+
+function getTariffPriceRange(tariff: Tariff): string {
+  const carsInClass = carsStore.items.filter(c => c.carClass === tariff.carClass && c.pricePerDay)
+  if (carsInClass.length === 0) {
+    return formatCurrency(tariff.dailyPrice)
+  }
+  const prices = carsInClass.map(c => c.pricePerDay!)
+  const min = Math.min(...prices)
+  const max = Math.max(...prices)
+  if (min === max) {
+    return formatCurrency(min)
+  }
+  return `${formatCurrency(min)} - ${formatCurrency(max)}`
+}
 
 async function removeTariff() {
   if (!tariffToRemove.value) {
@@ -92,7 +109,7 @@ async function removeTariff() {
             <h2 class="mt-2 text-xl font-semibold text-foreground">{{ tariff.name }}</h2>
           </div>
           <div class="rounded-2xl bg-white/[0.03] px-3 py-2 text-sm font-medium text-foreground">
-            {{ formatCurrency(tariff.dailyPrice) }}{{ locale === 'ru' ? '/сутки' : '/day' }}
+            {{ getTariffPriceRange(tariff) }}{{ locale === 'ru' ? '/сутки' : '/day' }}
           </div>
         </div>
         <p class="mt-4 text-sm text-muted-foreground">{{ tariff.description }}</p>

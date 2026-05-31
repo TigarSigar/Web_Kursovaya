@@ -24,6 +24,7 @@ interface BackendCar {
   fuelType: Car['fuelType']
   location: string
   odometerKm: number
+  pricePerDay?: number | null
   imageUrls: string[]
   notes?: string | null
 }
@@ -108,6 +109,7 @@ export function mapBackendCar(raw: BackendCar): Car {
   return {
     ...raw,
     id: String(raw.id),
+    pricePerDay: raw.pricePerDay ?? 3000,
     imageUrls,
     imageUrl: imageUrls[0],
     notes: raw.notes ?? '',

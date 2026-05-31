@@ -54,6 +54,7 @@ const form = ref<CarFormModel>({
   fuelType: 'PETROL',
   location: '',
   odometerKm: 0,
+  pricePerDay: 3000,
   imageUrls: [],
   notes: '',
 })
@@ -87,6 +88,7 @@ onMounted(async () => {
       fuelType: current.fuelType,
       location: current.location,
       odometerKm: current.odometerKm,
+      pricePerDay: current.pricePerDay ?? 3000,
       imageUrls: (current.imageUrls ?? []).filter((url) => Boolean(url) && !url.endsWith('.svg')),
       notes: current.notes ?? '',
     }

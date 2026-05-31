@@ -56,7 +56,7 @@ const copy = computed(() =>
         <ul class="mt-5 space-y-3 text-sm text-white/45">
           <li><RouterLink class="hover:text-primary" to="/cars">{{ copy.browse }}</RouterLink></li>
           <li><a class="hover:text-primary" href="/#how-it-works">{{ copy.how }}</a></li>
-          <li><RouterLink class="hover:text-primary" to="/login">{{ copy.account }}</RouterLink></li>
+          <li><RouterLink class="hover:text-primary" to="/client/account">{{ copy.account }}</RouterLink></li>
           <li><RouterLink class="hover:text-primary" to="/register">{{ copy.register }}</RouterLink></li>
         </ul>
       </div>

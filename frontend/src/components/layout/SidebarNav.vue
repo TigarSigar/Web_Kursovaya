@@ -9,6 +9,7 @@ import {
   LayoutDashboard,
   LogOut,
   Search,
+  Users,
   Wrench,
 } from 'lucide-vue-next'
 import LanguageSwitcher from '@/components/common/LanguageSwitcher.vue'
@@ -30,6 +31,7 @@ const iconMap = {
   Wrench,
   Search,
   House,
+  Users,
 }
 
 const items = computed(() => navigationItems.filter((item) => item.roles.includes('FLEET_MANAGER')))

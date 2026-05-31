@@ -82,6 +82,24 @@ export const useAuthStore = defineStore('auth', {
         this.loading = false
       }
     },
+    async updateClientProfile(payload: { driverLicenseNumber?: string; phone?: string }) {
+      if (!this.currentClientProfile) {
+        throw new Error('Not a client')
+      }
+      this.loading = true
+      try {
+        const fullPayload = {
+          fullName: `${this.currentClientProfile.firstName} ${this.currentClientProfile.lastName}`.trim(),
+          email: this.currentClientProfile.email,
+          phone: payload.phone ?? this.currentClientProfile.phone,
+          driverLicenseNumber: payload.driverLicenseNumber ?? this.currentClientProfile.driverLicenseNumber,
+          driverLicenseExpiry: this.currentClientProfile.driverLicenseExpiry
+        }
+        this.currentClientProfile = await clientsApi.updateProfile(this.currentClientProfile.id, fullPayload)
+      } finally {
+        this.loading = false
+      }
+    },
     logout() {
       this.currentAccount = null
       this.currentClientProfile = null

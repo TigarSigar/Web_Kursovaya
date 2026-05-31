@@ -11,6 +11,8 @@ import com.cargo.backend.rental.api.dto.RentalStatusHistoryResponse
 import com.cargo.backend.rental.domain.RentalStatusHistory
 import com.cargo.backend.tariff.api.dto.TariffResponse
 import com.cargo.backend.tariff.domain.Tariff
+import com.cargo.backend.car.domain.CarReview
+import com.cargo.backend.car.api.dto.CarReviewResponse
 import java.math.BigDecimal
 import java.time.LocalDate
 
@@ -40,6 +42,7 @@ fun Car.toFrontendResponse() = CarResponse(
     location = location.orEmpty(),
     odometerKm = odometerKm ?: 0,
     imageUrls = imageUrls.toMultilineList(),
+    pricePerDay = pricePerDay,
     notes = notes,
     createdAt = createdAt,
     updatedAt = updatedAt
@@ -71,7 +74,8 @@ fun ClientProfile.toFrontendResponse(): ClientResponse {
         phone = phone,
         driverLicenseNumber = driverLicenseNumber.orEmpty(),
         driverLicenseExpiry = driverLicenseExpiry.orEmpty(),
-        memberSince = memberSince ?: LocalDate.now().toString(),
+        memberSince = memberSince?.toString() ?: LocalDate.now().toString(),
+        avatarBase64 = avatarBase64,
         createdAt = createdAt,
         updatedAt = updatedAt
     )
@@ -87,3 +91,12 @@ fun RentalStatusHistory.toFrontendResponse() = RentalStatusHistoryResponse(
 )
 
 fun MaintenanceStatus?.orDefault(): MaintenanceStatus = this ?: MaintenanceStatus.SCHEDULED
+
+fun CarReview.toFrontendResponse() = CarReviewResponse(
+    id = id ?: throw IllegalStateException("Review id is null"),
+    authorName = author.fullName,
+    authorAvatarBase64 = author.avatarBase64,
+    content = content,
+    rating = rating,
+    createdAt = createdAt
+)

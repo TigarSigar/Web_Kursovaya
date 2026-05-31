@@ -34,6 +34,7 @@ const copy = computed(() =>
         fuel: 'Топливо',
         seats: 'Мест',
         odometer: 'Одометр, км',
+        pricePerDay: 'Стоимость аренды',
         image: 'Изображение',
         notes: 'Комментарий',
         makeHint: 'Можно выбрать существующую марку или ввести новую.',
@@ -61,6 +62,7 @@ const copy = computed(() =>
         fuel: 'Fuel',
         seats: 'Seats',
         odometer: 'Odometer, km',
+        pricePerDay: 'Rental price per day',
         image: 'Image',
         notes: 'Notes',
         makeHint: 'Choose an existing make or type a new one.',
@@ -195,6 +197,7 @@ function removeImage(index: number) {
     <label class="field-group"><span class="field-label">{{ copy.fuel }}</span><select class="input-base" :value="modelValue.fuelType" @change="update('fuelType', ($event.target as HTMLSelectElement).value as CarFormModel['fuelType'])"><option v-for="item in FUEL_TYPES" :key="item" :value="item">{{ humanizeEnum(item) }}</option></select></label>
     <label class="field-group"><span class="field-label">{{ copy.seats }}</span><input class="input-base" min="2" type="number" :value="modelValue.seats" @input="update('seats', Number(($event.target as HTMLInputElement).value))" /></label>
     <label class="field-group"><span class="field-label">{{ copy.odometer }}</span><input class="input-base" min="0" type="number" :value="modelValue.odometerKm" @input="update('odometerKm', Number(($event.target as HTMLInputElement).value))" /></label>
+    <label class="field-group"><span class="field-label">{{ copy.pricePerDay }}</span><input class="input-base" min="0" step="100" type="number" :value="modelValue.pricePerDay" @input="update('pricePerDay', Number(($event.target as HTMLInputElement).value))" /></label>
     <div class="field-group md:col-span-2">
       <span class="field-label">{{ copy.image }}</span>
       <div class="grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
