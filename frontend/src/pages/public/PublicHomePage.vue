@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, ref, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import {
   ArrowRight,
@@ -22,6 +22,25 @@ import type { SearchCarsParams } from '@/types/entities'
 const router = useRouter()
 const carsStore = useCarsStore()
 const { locale } = useI18n()
+
+const particlesCanvas = ref<HTMLCanvasElement | null>(null)
+let animationFrameId: number | null = null
+
+interface Particle {
+  x: number
+  y: number
+  vx: number
+  vy: number
+  baseVx: number
+  baseVy: number
+  radius: number
+}
+
+const mouse = {
+  x: null as number | null,
+  y: null as number | null,
+  radius: 120
+}
 
 const copy = computed(() =>
   locale.value === 'ru'
@@ -152,6 +171,113 @@ onMounted(async () => {
   if (carsStore.items.length === 0) {
     await carsStore.fetchAll()
   }
+
+  const canvas = particlesCanvas.value
+  if (!canvas) return
+  const ctx = canvas.getContext('2d')
+  if (!ctx) return
+
+  let width = (canvas.width = canvas.parentElement?.offsetWidth || window.innerWidth)
+  let height = (canvas.height = canvas.parentElement?.offsetHeight || 600)
+
+  const particles: Particle[] = []
+  const particleCount = Math.min(100, Math.floor((width * height) / 9000))
+
+  for (let i = 0; i < particleCount; i++) {
+    const vx = (Math.random() - 0.5) * 0.4
+    const vy = (Math.random() - 0.5) * 0.4
+    particles.push({
+      x: Math.random() * width,
+      y: Math.random() * height,
+      vx,
+      vy,
+      baseVx: vx,
+      baseVy: vy,
+      radius: Math.random() * 1.5 + 1
+    })
+  }
+
+  const handleResize = () => {
+    width = canvas.width = canvas.parentElement?.offsetWidth || window.innerWidth
+    height = canvas.height = canvas.parentElement?.offsetHeight || 600
+  }
+
+  const handleMouseMove = (e: MouseEvent) => {
+    const rect = canvas.getBoundingClientRect()
+    mouse.x = e.clientX - rect.left
+    mouse.y = e.clientY - rect.top
+  }
+
+  const handleMouseLeave = () => {
+    mouse.x = null
+    mouse.y = null
+  }
+
+  window.addEventListener('resize', handleResize)
+  canvas.parentElement?.addEventListener('mousemove', handleMouseMove)
+  canvas.parentElement?.addEventListener('mouseleave', handleMouseLeave)
+
+  const animate = () => {
+    ctx.clearRect(0, 0, width, height)
+
+    particles.forEach((p) => {
+      p.x += p.vx
+      p.y += p.vy
+
+      p.vx += (p.baseVx - p.vx) * 0.03
+      p.vy += (p.baseVy - p.vy) * 0.03
+
+      if (p.x < 0 || p.x > width) p.vx *= -1
+      if (p.y < 0 || p.y > height) p.vy *= -1
+
+      if (mouse.x !== null && mouse.y !== null) {
+        const dx = p.x - mouse.x
+        const dy = p.y - mouse.y
+        const dist = Math.sqrt(dx * dx + dy * dy)
+        if (dist < mouse.radius) {
+          const force = (mouse.radius - dist) / mouse.radius
+          const forceX = dx / dist
+          const forceY = dy / dist
+          const repulsion = force * 1.8
+          p.vx += forceX * repulsion
+          p.vy += forceY * repulsion
+        }
+      }
+
+      ctx.beginPath()
+      ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2)
+      ctx.fillStyle = 'rgba(139, 92, 246, 0.35)'
+      ctx.fill()
+    })
+
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x
+        const dy = particles[i].y - particles[j].y
+        const dist = Math.sqrt(dx * dx + dy * dy)
+
+        if (dist < 100) {
+          ctx.beginPath()
+          ctx.moveTo(particles[i].x, particles[i].y)
+          ctx.lineTo(particles[j].x, particles[j].y)
+          ctx.strokeStyle = `rgba(139, 92, 246, ${0.12 * (1 - dist / 100)})`
+          ctx.lineWidth = 0.8
+          ctx.stroke()
+        }
+      }
+    }
+
+    animationFrameId = requestAnimationFrame(animate)
+  }
+
+  animate()
+
+  onUnmounted(() => {
+    window.removeEventListener('resize', handleResize)
+    canvas.parentElement?.removeEventListener('mousemove', handleMouseMove)
+    canvas.parentElement?.removeEventListener('mouseleave', handleMouseLeave)
+    if (animationFrameId) cancelAnimationFrame(animationFrameId)
+  })
 })
 
 function handleSearch(params: SearchCarsParams) {
@@ -170,6 +296,7 @@ function handleSearch(params: SearchCarsParams) {
 <template>
   <div class="public-home">
     <section class="public-home__hero">
+      <canvas ref="particlesCanvas" class="particles-bg"></canvas>
       <div class="public-home__glow public-home__glow--top" />
       <div class="public-home__glow public-home__glow--bottom" />
       <div class="public-home__container">
@@ -180,7 +307,8 @@ function handleSearch(params: SearchCarsParams) {
                 <p class="page-kicker">CarGO</p>
                 <h1 class="page-title public-home__hero-title">
                   {{ copy.titleLine1 }}
-                  <span class="text-primary">{{ copy.titleLine2 }}</span>
+                  <br />
+                  <span class="text-primary whitespace-nowrap">{{ copy.titleLine2 }}</span>
                   <br />
                   {{ copy.titleLine3 }}
                 </h1>
@@ -430,6 +558,16 @@ function handleSearch(params: SearchCarsParams) {
   &__section {
     position: relative;
     padding: var(--space-6) 0;
+  }
+
+  .particles-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
   }
 
   &__section--alt {
