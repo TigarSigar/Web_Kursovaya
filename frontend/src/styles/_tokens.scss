@@ -1,0 +1,72 @@
+:root {
+  --color-background: 6 6 15;
+  --color-surface: 10 11 24;
+  --color-surface-strong: 15 16 32;
+  --color-foreground: 244 245 255;
+  --color-muted: 18 20 36;
+  --color-muted-foreground: 155 163 189;
+  --color-primary: 139 92 246;
+  --color-primary-foreground: 255 255 255;
+  --color-success: 74 222 128;
+  --color-warning: 251 191 36;
+  --color-danger: 248 113 113;
+  --color-border: 36 39 68;
+  --color-input: 12 13 26;
+  --color-sidebar: 8 9 18;
+  --color-sidebar-border: 28 30 52;
+  --color-sidebar-muted: 151 160 196;
+
+  --surface-glass: rgba(255, 255, 255, 0.03);
+  --surface-glass-strong: rgba(255, 255, 255, 0.05);
+  --surface-glass-hover: rgba(255, 255, 255, 0.07);
+  --surface-panel: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+  --surface-hero: linear-gradient(135deg, rgba(255, 255, 255, 0.03), rgba(15, 16, 32, 0.96));
+  --surface-section: linear-gradient(180deg, rgba(11, 11, 21, 0.96), rgba(8, 9, 18, 0.98));
+  --surface-section-alt: linear-gradient(180deg, rgba(5, 5, 13, 0.98), rgba(8, 9, 18, 0.96));
+  --surface-toast: rgba(10, 11, 24, 0.94);
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.14);
+  --text-soft: rgba(244, 245, 255, 0.72);
+  --text-muted: rgba(244, 245, 255, 0.5);
+  --text-faint: rgba(244, 245, 255, 0.38);
+  --shadow-card:
+    0 0 0 1px rgba(255, 255, 255, 0.015),
+    0 24px 48px rgba(3, 4, 12, 0.34);
+  --shadow-panel:
+    0 0 0 1px rgba(255, 255, 255, 0.02),
+    0 30px 60px rgba(3, 4, 12, 0.45);
+}
+
+html[data-theme='light'] {
+  --color-background: 244 247 255;
+  --color-surface: 255 255 255;
+  --color-surface-strong: 248 250 255;
+  --color-foreground: 20 24 38;
+  --color-muted: 232 236 247;
+  --color-muted-foreground: 96 106 132;
+  --color-border: 205 214 232;
+  --color-input: 255 255 255;
+  --color-sidebar: 249 250 255;
+  --color-sidebar-border: 216 223 238;
+  --color-sidebar-muted: 96 106 132;
+
+  --surface-glass: rgba(255, 255, 255, 0.84);
+  --surface-glass-strong: rgba(245, 248, 255, 0.96);
+  --surface-glass-hover: rgba(238, 243, 252, 0.98);
+  --surface-panel: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(241, 245, 255, 0.94));
+  --surface-hero: linear-gradient(135deg, rgba(139, 92, 246, 0.08), rgba(255, 255, 255, 0.96));
+  --surface-section: linear-gradient(180deg, rgba(255, 255, 255, 0.88), rgba(241, 245, 255, 0.94));
+  --surface-section-alt: linear-gradient(180deg, rgba(248, 250, 255, 0.92), rgba(235, 241, 255, 0.96));
+  --surface-toast: rgba(255, 255, 255, 0.97);
+  --border-subtle: rgba(31, 41, 55, 0.09);
+  --border-strong: rgba(31, 41, 55, 0.16);
+  --text-soft: rgba(20, 24, 38, 0.82);
+  --text-muted: rgba(71, 85, 105, 0.92);
+  --text-faint: rgba(100, 116, 139, 0.78);
+  --shadow-card:
+    0 0 0 1px rgba(148, 163, 184, 0.05),
+    0 18px 36px rgba(148, 163, 184, 0.18);
+  --shadow-panel:
+    0 0 0 1px rgba(148, 163, 184, 0.05),
+    0 18px 48px rgba(148, 163, 184, 0.16);
+}

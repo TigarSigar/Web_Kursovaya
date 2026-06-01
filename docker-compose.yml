@@ -1,0 +1,65 @@
+services:
+  # 1. База данных PostgreSQL 16
+  postgres:
+    image: postgres:16-alpine
+    container_name: car-rental-postgres
+    environment:
+      POSTGRES_DB: car_rental
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      # Автоматический импорт существующей схемы и данных при первом запуске
+      - ./database_dump.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d car_rental"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: always
+
+  # 2. Redis 7
+  redis:
+    image: redis:7-alpine
+    container_name: car-rental-redis
+    ports:
+      - "6379:6379"
+    restart: always
+
+  # 3. Бэкенд-приложение на Kotlin / Spring Boot
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: car-rental-backend
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      DB_URL: jdbc:postgresql://postgres:5432/car_rental
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+      SERVER_PORT: 8081
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    restart: unless-stopped
+
+  # 4. Фронтенд-приложение на Vue 3 + Nginx
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: car-rental-frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  postgres-data:
